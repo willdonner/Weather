@@ -14,13 +14,15 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -117,6 +119,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView textView_direct;
     private TextView textView_power;
     private TextView textView_aqi;
+    private TextView textView_future;
+
+    private ArrayList<FutureInfo> futureInfos = new ArrayList<>();
 
 
     @Override
@@ -141,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
         textView_direct = findViewById(R.id.textView_direct);
         textView_aqi = findViewById(R.id.textView_aqi);
         textView_power = findViewById(R.id.textView_power);
+        textView_future = findViewById(R.id.textView_future);
     }
 
     /**
@@ -236,12 +242,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try{
-                    OkHttpClient client = new OkHttpClient();//新建一个OKHttp的对象
-                    Request request = new Request.Builder()
-                            .url("https://apis.juhe.cn/simpleWeather/query?city="+city+"&key="+WeatherKey+"")
-                            .build();//创建一个Request对象
-                    Response response = client.newCall(request).execute();//发送请求获取返回数据
-                    String responseData = response.body().string();//处理返回的数据
+//                    OkHttpClient client = new OkHttpClient();//新建一个OKHttp的对象
+//                    Request request = new Request.Builder()
+//                            .url("https://apis.juhe.cn/simpleWeather/query?city="+city+"&key="+WeatherKey+"")
+//                            .build();//创建一个Request对象
+//                    Response response = client.newCall(request).execute();//发送请求获取返回数据
+//                    String responseData = response.body().string();//处理返回的数据
                     parseJSON(data);//解析JSON
                 }catch (Exception e){
                     e.printStackTrace();
@@ -259,8 +265,47 @@ public class MainActivity extends AppCompatActivity {
             JSONObject response = new JSONObject(responseData);
             String error_code = response.getString("error_code");
             String reason = response.getString("reason");
-            if (error_code == "0") {
-                searchSuccess(reason);
+            if (error_code.equals("0")) {
+                //城市
+                String city = response.getJSONObject("result").getString("city");
+                //当前天气信息
+                String temperature = response.getJSONObject("result").getJSONObject("realtime").getString("temperature");
+                String humidity = response.getJSONObject("result").getJSONObject("realtime").getString("humidity");
+                String info = response.getJSONObject("result").getJSONObject("realtime").getString("info");
+                String wid = response.getJSONObject("result").getJSONObject("realtime").getString("wid");
+                String direct = response.getJSONObject("result").getJSONObject("realtime").getString("direct");
+                String power = response.getJSONObject("result").getJSONObject("realtime").getString("power");
+                String aqi = response.getJSONObject("result").getJSONObject("realtime").getString("aqi");
+
+                RealtimeInfo realtimeInfo = new RealtimeInfo();
+                realtimeInfo.setAqi(aqi);
+                realtimeInfo.setDirect(direct);
+                realtimeInfo.setHumidity(humidity);
+                realtimeInfo.setInfo(info);
+                realtimeInfo.setPower(power);
+                realtimeInfo.setTemperature(temperature);
+                realtimeInfo.setWid(wid);
+                //未来天气信息
+                JSONArray JSONArray_future = response.getJSONObject("result").getJSONArray("future");
+                for (int i = 0;i < JSONArray_future.length();i++) {
+                    String future_date = JSONArray_future.getJSONObject(i).getString("date");
+                    String future_temperature = JSONArray_future.getJSONObject(i).getString("temperature");
+                    String future_weather = JSONArray_future.getJSONObject(i).getString("weather");
+                    String future_wid_day = JSONArray_future.getJSONObject(i).getJSONObject("wid").getString("day");
+                    String future_wid_night = JSONArray_future.getJSONObject(i).getJSONObject("wid").getString("night");
+                    String future_direct = JSONArray_future.getJSONObject(i).getString("direct");
+
+                    FutureInfo futureInfo = new FutureInfo();
+                    futureInfo.setDate(future_date);
+                    futureInfo.setTemperature(future_temperature);
+                    futureInfo.setWeather(future_weather);
+                    futureInfo.setWid_day(future_wid_day);
+                    futureInfo.setWid_night(future_wid_night);
+                    futureInfo.setDirect(future_direct);
+
+                    futureInfos.add(futureInfo);
+                }
+                searchSuccess(reason,city,realtimeInfo,futureInfos);
             }else {
                 searchFail(reason);
             }
@@ -270,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 查询天气失败
+     * 查询天气失败，更新UI
      */
     private void searchFail(final String reason) {
         runOnUiThread(new Runnable() {
@@ -282,14 +327,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 更新UI
+     * 查询天气成功，更新UI
      * @param reason
      */
-    private void searchSuccess(final String reason){
+    private void searchSuccess(final String reason, final String city, final RealtimeInfo realtimeInfo, final ArrayList<FutureInfo> futureInfos){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 textView_reason.setText(reason);
+                textView_city.setText(city);
+                textView_temperature.setText(realtimeInfo.getTemperature());
+                textView_humidity.setText(realtimeInfo.getHumidity());
+                textView_info.setText(realtimeInfo.getInfo());
+                textView_wid.setText(realtimeInfo.getWid());
+                textView_direct.setText(realtimeInfo.getDirect());
+                textView_power.setText(realtimeInfo.getPower());
+                textView_aqi.setText(realtimeInfo.getAqi());
+
+                for (int i = 0;i < futureInfos.size();i++) {
+                    FutureInfo futureInfo = futureInfos.get(i);
+                    textView_future.append(futureInfo.getDate()+futureInfo.getDirect()+futureInfo.getTemperature()+futureInfo.getWeather()+futureInfo.getWid_day()+futureInfo.getWid_night());
+                    textView_future.append("\n");
+                }
             }
         });
     }
