@@ -4,12 +4,39 @@ package com.dongxun.lichunkai.weather;
  * 未来天气信息类
  */
 public class FutureInfo {
-    private String date;
-    private String temperature;
-    private String weather;
-    private String wid_day;
-    private String wid_night;
-    private String direct;
+    private String date;//日期
+    private String temperature;//温度
+    private String weather;//天气
+    private String wid_day;//天气标识id-白天
+    private String wid_night;//天气标识id-夜晚
+    private int wid_img;//天气图标
+    private String direct;//风向
+    private Boolean today;//是否是今天
+    private String week;//周几
+
+    public String getWeek() {
+        return week;
+    }
+
+    public void setWeek(String week) {
+        this.week = week;
+    }
+
+    public Boolean getToday() {
+        return today;
+    }
+
+    public void setToday(Boolean today) {
+        this.today = today;
+    }
+
+    public int getWid_img() {
+        return wid_img;
+    }
+
+    public void setWid_img(int wid_img) {
+        this.wid_img = wid_img;
+    }
 
     public String getDate() {
         return date;

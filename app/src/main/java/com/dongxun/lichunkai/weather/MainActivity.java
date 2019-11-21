@@ -1,12 +1,14 @@
 package com.dongxun.lichunkai.weather;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -14,7 +16,15 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.view.Display;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,7 +32,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -102,17 +116,16 @@ public class MainActivity extends AppCompatActivity {
             "\t},\n" +
             "\t\"error_code\":0\n" +
             "}";
-    private TextView textView_reason;
+    private ImageView imageView_back;
     private TextView textView_city;
     private TextView textView_temperature;
     private TextView textView_humidity;
     private TextView textView_info;
-    private TextView textView_wid;
-    private TextView textView_direct;
+    private ImageView imageView_wid;
     private TextView textView_power;
     private TextView textView_aqi;
-    private TextView textView_future;
     private ArrayList<FutureInfo> futureInfos = new ArrayList<>();
+    private ListView ListView_future;
 
 
     @Override
@@ -120,8 +133,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        initBar();
         initView();
+        setBack();
         getPermission();
 
 
@@ -129,27 +142,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 初始化状态栏
+     * 设置背景图片位置
      */
-    private void initBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
+    private void setBack() {
+        WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
+        int height = wm.getDefaultDisplay().getHeight();
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.topMargin = -(height - imageView_back.getHeight())/2;
+        imageView_back.setLayoutParams(layoutParams);
     }
+
 
     /**
      * 初始化组件
      */
     private void initView() {
-//        textView_reason = findViewById(R.id.textView_reason);
-//        textView_city = findViewById(R.id.textView_city);
-//        textView_temperature = findViewById(R.id.textView_temperature);
-//        textView_humidity = findViewById(R.id.textView_humidity);
-//        textView_info = findViewById(R.id.textView_info);
-//        textView_wid = findViewById(R.id.textView_wid);
-//        textView_direct = findViewById(R.id.textView_direct);
-//        textView_aqi = findViewById(R.id.textView_aqi);
-//        textView_power = findViewById(R.id.textView_power);
-//        textView_future = findViewById(R.id.textView_future);
+        imageView_back = findViewById(R.id.imageView_back);
+        textView_city = findViewById(R.id.textView_city);
+        textView_temperature = findViewById(R.id.textView_temperature);
+        textView_humidity = findViewById(R.id.textView_humidity);
+        textView_info = findViewById(R.id.textView_info);
+        imageView_wid = findViewById(R.id.imageView_wid);
+        textView_aqi = findViewById(R.id.textView_aqi);
+        textView_power = findViewById(R.id.textView_power);
+        ListView_future = findViewById(R.id.ListView_future);
     }
 
     /**
@@ -226,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
             public void onProviderDisabled(String provider) {
             }
         };
-        getDataByCity();
+        getDataByCity();//定位后根据城市查询天气
     }
 
     /**
@@ -309,7 +325,10 @@ public class MainActivity extends AppCompatActivity {
                     futureInfo.setWeather(future.getString("weather"));
                     futureInfo.setWid_day(future.getJSONObject("wid").getString("day"));
                     futureInfo.setWid_night(future.getJSONObject("wid").getString("night"));
+                    futureInfo.setWid_img(getWidImg(isDay()?future.getJSONObject("wid").getString("day"):future.getJSONObject("wid").getString("night")));
                     futureInfo.setDirect(future.getString("direct"));
+                    futureInfo.setToday(i == 0?true:false);
+                    futureInfo.setWeek(getWeek(future.getString("date")));
 
                     futureInfos.add(futureInfo);
                 }
@@ -329,7 +348,7 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-//                textView_reason.setText(reason);
+
             }
         });
     }
@@ -343,21 +362,129 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
 //                textView_reason.setText(reason);
-//                textView_city.setText(city);
-//                textView_temperature.setText(realtimeInfo.getTemperature());
-//                textView_humidity.setText(realtimeInfo.getHumidity());
-//                textView_info.setText(realtimeInfo.getInfo());
-//                textView_wid.setText(realtimeInfo.getWid());
-//                textView_direct.setText(realtimeInfo.getDirect());
-//                textView_power.setText(realtimeInfo.getPower());
-//                textView_aqi.setText(realtimeInfo.getAqi());
-//
-//                for (int i = 0;i < futureInfos.size();i++) {
-//                    FutureInfo futureInfo = futureInfos.get(i);
-//                    textView_future.append(futureInfo.getDate()+futureInfo.getDirect()+futureInfo.getTemperature()+futureInfo.getWeather()+futureInfo.getWid_day()+futureInfo.getWid_night());
-//                    textView_future.append("\n");
-//                }
+                textView_city.setText(city);
+                textView_temperature.setText(realtimeInfo.getTemperature() + "°");
+                textView_humidity.setText("湿度 " + realtimeInfo.getHumidity());
+                textView_info.setText(realtimeInfo.getInfo());
+                imageView_wid.setImageResource(getWidImg(realtimeInfo.getWid()));
+                textView_power.setText("风力 " + realtimeInfo.getPower());
+                textView_aqi.setText("空气 " + getAqiLevel(Integer.parseInt(realtimeInfo.getAqi())) + " " + realtimeInfo.getAqi());
+
+                FutureAdapter myAdapter = new FutureAdapter(MainActivity.this,R.layout.future,futureInfos);
+                ListView_future.setAdapter(myAdapter);
             }
         });
+    }
+
+    /**
+     * 根据当前日期获得是星期几
+     * time=yyyy-MM-dd
+     * @return
+     */
+    public static String getWeek(String time) {
+        String Week = "";
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Calendar c = Calendar.getInstance();
+        try {
+            c.setTime(format.parse(time));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        int wek=c.get(Calendar.DAY_OF_WEEK);
+        if (wek == 1) {
+            Week += "周天";
+        }
+        if (wek == 2) {
+            Week += "周一";
+        }
+        if (wek == 3) {
+            Week += "周二";
+        }
+        if (wek == 4) {
+            Week += "周三";
+        }
+        if (wek == 5) {
+            Week += "周四";
+        }
+        if (wek == 6) {
+            Week += "周五";
+        }
+        if (wek == 7) {
+            Week += "周六";
+        }
+        return Week;
+    }
+
+    /**
+     * 判断时间是否为白天
+     */
+    private Boolean isDay() {
+        Date date = new Date();
+        SimpleDateFormat df = new SimpleDateFormat("HH");
+        String str = df.format(date);
+        int a = Integer.parseInt(str);
+        if (a > 18 && a <= 24) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 获取天气对应的图标
+     * @param wid
+     * @return
+     */
+    private int getWidImg(String wid) {
+        switch (wid){
+            case "00": return R.drawable.wid_00;
+            case "01": return R.drawable.wid_01;
+            case "02": return R.drawable.wid_02;
+            case "03": return R.drawable.wid_03;
+            case "04": return R.drawable.wid_04;
+            case "05": return R.drawable.wid_05;
+            case "06": return R.drawable.wid_06;
+            case "07": return R.drawable.wid_07;
+            case "08": return R.drawable.wid_08;
+            case "09": return R.drawable.wid_09;
+            case "10": return R.drawable.wid_10;
+            case "11": return R.drawable.wid_11;
+            case "12": return R.drawable.wid_12;
+            case "13": return R.drawable.wid_13;
+            case "14": return R.drawable.wid_14;
+            case "15": return R.drawable.wid_15;
+            case "16": return R.drawable.wid_16;
+            case "17": return R.drawable.wid_17;
+            case "18": return R.drawable.wid_18;
+            case "19": return R.drawable.wid_19;
+            case "20": return R.drawable.wid_20;
+            case "21": return R.drawable.wid_21;
+            case "22": return R.drawable.wid_22;
+            case "23": return R.drawable.wid_23;
+            case "24": return R.drawable.wid_24;
+            case "25": return R.drawable.wid_25;
+            case "26": return R.drawable.wid_26;
+            case "27": return R.drawable.wid_27;
+            case "28": return R.drawable.wid_28;
+            case "29": return R.drawable.wid_29;
+            case "30": return R.drawable.wid_30;
+            case "31": return R.drawable.wid_31;
+            case "53": return R.drawable.wid_53;
+            default: return R.drawable.wid_00;
+        }
+    }
+
+    /**
+     * 空气质量级别
+     * @param aqi
+     * @return
+     */
+    private String getAqiLevel(int aqi) {
+        String aqiLevel = "优";
+        if (aqi > 300) aqiLevel = "严重污染";
+        if (aqi < 301) aqiLevel = "中度污染";
+        if (aqi < 201) aqiLevel = "轻度污染";
+        if (aqi < 101) aqiLevel = "良";
+        if (aqi < 51) aqiLevel = "优";
+        return aqiLevel;
     }
 }
