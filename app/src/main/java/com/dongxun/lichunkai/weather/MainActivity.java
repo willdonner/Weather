@@ -128,16 +128,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        getPermission();
         initView();
         setBack();
-        getPermission();
-
-
-
     }
 
     /**
-     * 设置背景图片位置
+     * 设置背景图片位置和图片
      */
     private void setBack() {
         WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
