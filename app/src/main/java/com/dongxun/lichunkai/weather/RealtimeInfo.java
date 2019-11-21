@@ -1,5 +1,8 @@
 package com.dongxun.lichunkai.weather;
 
+/**
+ * 当前天气信息类
+ */
 public class RealtimeInfo {
     private String temperature;
     private String humidity;

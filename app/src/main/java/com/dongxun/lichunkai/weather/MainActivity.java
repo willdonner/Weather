@@ -1,6 +1,7 @@
 package com.dongxun.lichunkai.weather;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -14,7 +15,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,21 +26,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-
     private LocationManager locationManager;
     private LocationListener locationListener;
-
     private  String WeatherKey = "e187097c8e703fce523ff6e8204ef8cc";//查询天气key
     private String City = "昆明";//查询城市
-
     private String data = "{\n" +
             "\t\"reason\":\"查询成功\",\n" +
             "\t\"result\":{\n" +
@@ -109,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
             "\t},\n" +
             "\t\"error_code\":0\n" +
             "}";
-
     private TextView textView_reason;
     private TextView textView_city;
     private TextView textView_temperature;
@@ -120,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView textView_power;
     private TextView textView_aqi;
     private TextView textView_future;
-
     private ArrayList<FutureInfo> futureInfos = new ArrayList<>();
 
 
@@ -129,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initBar();
         initView();
         getPermission();
 
@@ -136,17 +128,35 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * 初始化状态栏
+     */
+    private void initBar() {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
+    }
+
+    /**
+     * 初始化组件
+     */
     private void initView() {
-        textView_reason = findViewById(R.id.textView_reason);
-        textView_city = findViewById(R.id.textView_city);
-        textView_temperature = findViewById(R.id.textView_temperature);
-        textView_humidity = findViewById(R.id.textView_humidity);
-        textView_info = findViewById(R.id.textView_info);
-        textView_wid = findViewById(R.id.textView_wid);
-        textView_direct = findViewById(R.id.textView_direct);
-        textView_aqi = findViewById(R.id.textView_aqi);
-        textView_power = findViewById(R.id.textView_power);
-        textView_future = findViewById(R.id.textView_future);
+//        textView_reason = findViewById(R.id.textView_reason);
+//        textView_city = findViewById(R.id.textView_city);
+//        textView_temperature = findViewById(R.id.textView_temperature);
+//        textView_humidity = findViewById(R.id.textView_humidity);
+//        textView_info = findViewById(R.id.textView_info);
+//        textView_wid = findViewById(R.id.textView_wid);
+//        textView_direct = findViewById(R.id.textView_direct);
+//        textView_aqi = findViewById(R.id.textView_aqi);
+//        textView_power = findViewById(R.id.textView_power);
+//        textView_future = findViewById(R.id.textView_future);
+    }
+
+    /**
+     * 显示信息
+     */
+    private void showMessage() {
+
     }
 
     /**
@@ -175,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},200);
         }else{
             location();//开始定位
-           Toast.makeText(MainActivity.this,"已开启定位权限",Toast.LENGTH_LONG).show();
+//           Toast.makeText(MainActivity.this,"已开启定位权限",Toast.LENGTH_LONG).show();
         }
     }
 
@@ -319,7 +329,7 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                textView_reason.setText(reason);
+//                textView_reason.setText(reason);
             }
         });
     }
@@ -332,21 +342,21 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                textView_reason.setText(reason);
-                textView_city.setText(city);
-                textView_temperature.setText(realtimeInfo.getTemperature());
-                textView_humidity.setText(realtimeInfo.getHumidity());
-                textView_info.setText(realtimeInfo.getInfo());
-                textView_wid.setText(realtimeInfo.getWid());
-                textView_direct.setText(realtimeInfo.getDirect());
-                textView_power.setText(realtimeInfo.getPower());
-                textView_aqi.setText(realtimeInfo.getAqi());
-
-                for (int i = 0;i < futureInfos.size();i++) {
-                    FutureInfo futureInfo = futureInfos.get(i);
-                    textView_future.append(futureInfo.getDate()+futureInfo.getDirect()+futureInfo.getTemperature()+futureInfo.getWeather()+futureInfo.getWid_day()+futureInfo.getWid_night());
-                    textView_future.append("\n");
-                }
+//                textView_reason.setText(reason);
+//                textView_city.setText(city);
+//                textView_temperature.setText(realtimeInfo.getTemperature());
+//                textView_humidity.setText(realtimeInfo.getHumidity());
+//                textView_info.setText(realtimeInfo.getInfo());
+//                textView_wid.setText(realtimeInfo.getWid());
+//                textView_direct.setText(realtimeInfo.getDirect());
+//                textView_power.setText(realtimeInfo.getPower());
+//                textView_aqi.setText(realtimeInfo.getAqi());
+//
+//                for (int i = 0;i < futureInfos.size();i++) {
+//                    FutureInfo futureInfo = futureInfos.get(i);
+//                    textView_future.append(futureInfo.getDate()+futureInfo.getDirect()+futureInfo.getTemperature()+futureInfo.getWeather()+futureInfo.getWid_day()+futureInfo.getWid_night());
+//                    textView_future.append("\n");
+//                }
             }
         });
     }
