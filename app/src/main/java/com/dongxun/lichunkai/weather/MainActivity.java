@@ -219,6 +219,12 @@ public class MainActivity extends AppCompatActivity {
         getDataByCity();
     }
 
+    /**
+     * 权限请求
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -268,40 +274,32 @@ public class MainActivity extends AppCompatActivity {
             if (error_code.equals("0")) {
                 //城市
                 String city = response.getJSONObject("result").getString("city");
+
                 //当前天气信息
-                String temperature = response.getJSONObject("result").getJSONObject("realtime").getString("temperature");
-                String humidity = response.getJSONObject("result").getJSONObject("realtime").getString("humidity");
-                String info = response.getJSONObject("result").getJSONObject("realtime").getString("info");
-                String wid = response.getJSONObject("result").getJSONObject("realtime").getString("wid");
-                String direct = response.getJSONObject("result").getJSONObject("realtime").getString("direct");
-                String power = response.getJSONObject("result").getJSONObject("realtime").getString("power");
-                String aqi = response.getJSONObject("result").getJSONObject("realtime").getString("aqi");
+                JSONObject realtime = response.getJSONObject("result").getJSONObject("realtime");
 
                 RealtimeInfo realtimeInfo = new RealtimeInfo();
-                realtimeInfo.setAqi(aqi);
-                realtimeInfo.setDirect(direct);
-                realtimeInfo.setHumidity(humidity);
-                realtimeInfo.setInfo(info);
-                realtimeInfo.setPower(power);
-                realtimeInfo.setTemperature(temperature);
-                realtimeInfo.setWid(wid);
+                realtimeInfo.setAqi(realtime.getString("aqi"));
+                realtimeInfo.setDirect(realtime.getString("direct"));
+                realtimeInfo.setHumidity(realtime.getString("humidity"));
+                realtimeInfo.setInfo(realtime.getString("info"));
+                realtimeInfo.setPower(realtime.getString("power"));
+                realtimeInfo.setTemperature(realtime.getString("temperature"));
+                realtimeInfo.setWid(realtime.getString("wid"));
+
                 //未来天气信息
                 JSONArray JSONArray_future = response.getJSONObject("result").getJSONArray("future");
+
                 for (int i = 0;i < JSONArray_future.length();i++) {
-                    String future_date = JSONArray_future.getJSONObject(i).getString("date");
-                    String future_temperature = JSONArray_future.getJSONObject(i).getString("temperature");
-                    String future_weather = JSONArray_future.getJSONObject(i).getString("weather");
-                    String future_wid_day = JSONArray_future.getJSONObject(i).getJSONObject("wid").getString("day");
-                    String future_wid_night = JSONArray_future.getJSONObject(i).getJSONObject("wid").getString("night");
-                    String future_direct = JSONArray_future.getJSONObject(i).getString("direct");
+                    JSONObject future = JSONArray_future.getJSONObject(i);
 
                     FutureInfo futureInfo = new FutureInfo();
-                    futureInfo.setDate(future_date);
-                    futureInfo.setTemperature(future_temperature);
-                    futureInfo.setWeather(future_weather);
-                    futureInfo.setWid_day(future_wid_day);
-                    futureInfo.setWid_night(future_wid_night);
-                    futureInfo.setDirect(future_direct);
+                    futureInfo.setDate(future.getString("date"));
+                    futureInfo.setTemperature(future.getString("temperature"));
+                    futureInfo.setWeather(future.getString("weather"));
+                    futureInfo.setWid_day(future.getJSONObject("wid").getString("day"));
+                    futureInfo.setWid_night(future.getJSONObject("wid").getString("night"));
+                    futureInfo.setDirect(future.getString("direct"));
 
                     futureInfos.add(futureInfo);
                 }
