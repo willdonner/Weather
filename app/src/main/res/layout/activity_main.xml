@@ -73,16 +73,27 @@
                     android:id="@+id/textView_info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:text="晴"
-                    android:layout_marginLeft="10dp"
                     android:textColor="#ffff"
                     android:textSize="20sp" />
             </LinearLayout>
 
+            <TextView
+                android:id="@+id/textView_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="2019年11月21日 周一"
+                android:layout_marginTop="10dp"
+                android:textColor="#ffff"
+                android:textSize="16sp" />
+
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/LinearLayout_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -162,7 +173,8 @@
             <ListView
                 android:id="@+id/ListView_future"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                tools:visibility="gone" />
 
         </LinearLayout>
 

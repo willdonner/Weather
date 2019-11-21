@@ -9,10 +9,18 @@ public class FutureInfo {
     private String weather;//天气
     private String wid_day;//天气标识id-白天
     private String wid_night;//天气标识id-夜晚
-    private int wid_img;//天气图标
     private String direct;//风向
     private Boolean today;//是否是今天
     private String week;//周几
+    private int wid_img;
+
+    public int getWid_img() {
+        return wid_img;
+    }
+
+    public void setWid_img(int wid_img) {
+        this.wid_img = wid_img;
+    }
 
     public String getWeek() {
         return week;
@@ -28,14 +36,6 @@ public class FutureInfo {
 
     public void setToday(Boolean today) {
         this.today = today;
-    }
-
-    public int getWid_img() {
-        return wid_img;
-    }
-
-    public void setWid_img(int wid_img) {
-        this.wid_img = wid_img;
     }
 
     public String getDate() {

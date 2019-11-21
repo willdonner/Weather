@@ -1,14 +1,10 @@
 package com.dongxun.lichunkai.weather;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -16,10 +12,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
-import android.view.Display;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -27,7 +20,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,7 +31,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -126,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView textView_aqi;
     private ArrayList<FutureInfo> futureInfos = new ArrayList<>();
     private ListView ListView_future;
+    private TextView textView_time;
 
 
     @Override
@@ -166,6 +161,7 @@ public class MainActivity extends AppCompatActivity {
         textView_aqi = findViewById(R.id.textView_aqi);
         textView_power = findViewById(R.id.textView_power);
         ListView_future = findViewById(R.id.ListView_future);
+        textView_time = findViewById(R.id.textView_time);
     }
 
     /**
@@ -274,13 +270,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try{
-//                    OkHttpClient client = new OkHttpClient();//新建一个OKHttp的对象
-//                    Request request = new Request.Builder()
-//                            .url("https://apis.juhe.cn/simpleWeather/query?city="+city+"&key="+WeatherKey+"")
-//                            .build();//创建一个Request对象
-//                    Response response = client.newCall(request).execute();//发送请求获取返回数据
-//                    String responseData = response.body().string();//处理返回的数据
-                    parseJSON(data);//解析JSON
+                    OkHttpClient client = new OkHttpClient();//新建一个OKHttp的对象
+                    Request request = new Request.Builder()
+                            .url("https://apis.juhe.cn/simpleWeather/query?city="+city+"&key="+WeatherKey+"")
+                            .build();//创建一个Request对象
+                    Response response = client.newCall(request).execute();//发送请求获取返回数据
+                    String responseData = response.body().string();//处理返回的数据
+                    parseJSON(responseData);//解析JSON
                 }catch (Exception e){
                     e.printStackTrace();
                 }
@@ -325,11 +321,10 @@ public class MainActivity extends AppCompatActivity {
                     futureInfo.setWeather(future.getString("weather"));
                     futureInfo.setWid_day(future.getJSONObject("wid").getString("day"));
                     futureInfo.setWid_night(future.getJSONObject("wid").getString("night"));
-                    futureInfo.setWid_img(getWidImg(isDay()?future.getJSONObject("wid").getString("day"):future.getJSONObject("wid").getString("night")));
                     futureInfo.setDirect(future.getString("direct"));
                     futureInfo.setToday(i == 0?true:false);
                     futureInfo.setWeek(getWeek(future.getString("date")));
-
+                    futureInfo.setWid_img(getWidImg(isDay()?future.getJSONObject("wid").getString("day"):future.getJSONObject("wid").getString("night"),false));
                     futureInfos.add(futureInfo);
                 }
                 searchSuccess(reason,city,realtimeInfo,futureInfos);
@@ -366,9 +361,10 @@ public class MainActivity extends AppCompatActivity {
                 textView_temperature.setText(realtimeInfo.getTemperature() + "°");
                 textView_humidity.setText("湿度 " + realtimeInfo.getHumidity());
                 textView_info.setText(realtimeInfo.getInfo());
-                imageView_wid.setImageResource(getWidImg(realtimeInfo.getWid()));
+                imageView_wid.setImageResource(getWidImg(realtimeInfo.getWid(),true));
                 textView_power.setText("风力 " + realtimeInfo.getPower());
-                textView_aqi.setText("空气 " + getAqiLevel(Integer.parseInt(realtimeInfo.getAqi())) + " " + realtimeInfo.getAqi());
+                textView_aqi.setText("空气" + getAqiLevel(Integer.parseInt(realtimeInfo.getAqi())) + " " + realtimeInfo.getAqi());
+                textView_time.setText(new SimpleDateFormat("YYYY年MM月dd日 E").format(new Date()));
 
                 FutureAdapter myAdapter = new FutureAdapter(MainActivity.this,R.layout.future,futureInfos);
                 ListView_future.setAdapter(myAdapter);
@@ -418,7 +414,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * 判断时间是否为白天
      */
-    private Boolean isDay() {
+    public static Boolean isDay() {
         Date date = new Date();
         SimpleDateFormat df = new SimpleDateFormat("HH");
         String str = df.format(date);
@@ -431,45 +427,46 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * 获取天气对应的图标
-     * @param wid
+     * @param wid 天气标识
+     * @param isWhite 是否查找白色图标
      * @return
      */
-    private int getWidImg(String wid) {
+    public static int getWidImg(String wid,Boolean isWhite) {
         switch (wid){
-            case "00": return R.drawable.wid_00;
-            case "01": return R.drawable.wid_01;
-            case "02": return R.drawable.wid_02;
-            case "03": return R.drawable.wid_03;
-            case "04": return R.drawable.wid_04;
-            case "05": return R.drawable.wid_05;
-            case "06": return R.drawable.wid_06;
-            case "07": return R.drawable.wid_07;
-            case "08": return R.drawable.wid_08;
-            case "09": return R.drawable.wid_09;
-            case "10": return R.drawable.wid_10;
-            case "11": return R.drawable.wid_11;
-            case "12": return R.drawable.wid_12;
-            case "13": return R.drawable.wid_13;
-            case "14": return R.drawable.wid_14;
-            case "15": return R.drawable.wid_15;
-            case "16": return R.drawable.wid_16;
-            case "17": return R.drawable.wid_17;
-            case "18": return R.drawable.wid_18;
-            case "19": return R.drawable.wid_19;
-            case "20": return R.drawable.wid_20;
-            case "21": return R.drawable.wid_21;
-            case "22": return R.drawable.wid_22;
-            case "23": return R.drawable.wid_23;
-            case "24": return R.drawable.wid_24;
-            case "25": return R.drawable.wid_25;
-            case "26": return R.drawable.wid_26;
-            case "27": return R.drawable.wid_27;
-            case "28": return R.drawable.wid_28;
-            case "29": return R.drawable.wid_29;
-            case "30": return R.drawable.wid_30;
-            case "31": return R.drawable.wid_31;
-            case "53": return R.drawable.wid_53;
-            default: return R.drawable.wid_00;
+            case "00": return isWhite?R.drawable.wid_00:R.drawable.info_00;
+            case "01": return isWhite?R.drawable.wid_01:R.drawable.info_01;
+            case "02": return isWhite?R.drawable.wid_02:R.drawable.info_02;
+            case "03": return isWhite?R.drawable.wid_03:R.drawable.info_03;
+            case "04": return isWhite?R.drawable.wid_04:R.drawable.info_04;
+            case "05": return isWhite?R.drawable.wid_05:R.drawable.info_05;
+            case "06": return isWhite?R.drawable.wid_06:R.drawable.info_06;
+            case "07": return isWhite?R.drawable.wid_07:R.drawable.info_07;
+            case "08": return isWhite?R.drawable.wid_08:R.drawable.info_08;
+            case "09": return isWhite?R.drawable.wid_09:R.drawable.info_09;
+            case "10": return isWhite?R.drawable.wid_10:R.drawable.info_10;
+            case "11": return isWhite?R.drawable.wid_11:R.drawable.info_11;
+            case "12": return isWhite?R.drawable.wid_12:R.drawable.info_12;
+            case "13": return isWhite?R.drawable.wid_13:R.drawable.info_13;
+            case "14": return isWhite?R.drawable.wid_14:R.drawable.info_14;
+            case "15": return isWhite?R.drawable.wid_15:R.drawable.info_15;
+            case "16": return isWhite?R.drawable.wid_16:R.drawable.info_16;
+            case "17": return isWhite?R.drawable.wid_17:R.drawable.info_17;
+            case "18": return isWhite?R.drawable.wid_18:R.drawable.info_18;
+            case "19": return isWhite?R.drawable.wid_19:R.drawable.info_19;
+            case "20": return isWhite?R.drawable.wid_20:R.drawable.info_20;
+            case "21": return isWhite?R.drawable.wid_21:R.drawable.info_21;
+            case "22": return isWhite?R.drawable.wid_22:R.drawable.info_22;
+            case "23": return isWhite?R.drawable.wid_23:R.drawable.info_23;
+            case "24": return isWhite?R.drawable.wid_24:R.drawable.info_24;
+            case "25": return isWhite?R.drawable.wid_25:R.drawable.info_25;
+            case "26": return isWhite?R.drawable.wid_26:R.drawable.info_26;
+            case "27": return isWhite?R.drawable.wid_27:R.drawable.info_27;
+            case "28": return isWhite?R.drawable.wid_28:R.drawable.info_28;
+            case "29": return isWhite?R.drawable.wid_29:R.drawable.info_29;
+            case "30": return isWhite?R.drawable.wid_30:R.drawable.info_30;
+            case "31": return isWhite?R.drawable.wid_31:R.drawable.info_31;
+            case "53": return isWhite?R.drawable.wid_53:R.drawable.info_53;
+            default: return isWhite?R.drawable.wid_00:R.drawable.info_00;
         }
     }
 
