@@ -57,7 +57,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String TAG = "MainActivity";
     private LocationManager locationManager;
     private LocationListener locationListener;
-    private  String WeatherKey = "e187097c8e703fce523ff6e8204ef8cc";//查询天气key
+//    private  String WeatherKey = "e187097c8e703fce523ff6e8204ef8cc";//lck查询天气key
+    private  String WeatherKey = "8843798dfd89eeab638b8396174a9c84";//ysd查询天气key
     private String City = "昆明";//查询城市
     private ImageView imageView_back;
     private TextView textView_city;
