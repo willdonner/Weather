@@ -10,7 +10,7 @@
 
     <style name="FullScree" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowNoTitle">true</item>    <!--无标题-->
-        <item name="android:windowFullscreen">true</item>   <!--全屏-->
+<!--        <item name="android:windowFullscreen">true</item>   &lt;!&ndash;全屏&ndash;&gt;-->
         <item name="android:windowIsTranslucent">true</item>
     </style>
 
