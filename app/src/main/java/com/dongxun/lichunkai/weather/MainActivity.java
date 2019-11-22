@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             if (msg.what == 1){
                 //do something
-                if(needGetData){
+                if(needGetData && isNetworkAvailable(MainActivity.this)){
                     location();
                 }
             }
