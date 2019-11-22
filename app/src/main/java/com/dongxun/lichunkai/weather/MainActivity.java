@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -51,7 +52,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private String TAG = "MainActivity";
     private LocationManager locationManager;
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imageView_loading;
     private LinearLayout LinearLayout_message;
     private Boolean needGetData = true;
+    private ImageView imageView_cityList;
 
     Handler handler = new Handler() {
         @Override
@@ -216,8 +218,9 @@ public class MainActivity extends AppCompatActivity {
         textView_loading = findViewById(R.id.textView_loading);
         imageView_loading = findViewById(R.id.imageView_loading);
         LinearLayout_message = findViewById(R.id.LinearLayout_message);
+        imageView_cityList = findViewById(R.id.imageView_cityList);
+        imageView_cityList.setOnClickListener(this);
     }
-
 
     /**
      * 定位后根据城市查询天气
@@ -571,5 +574,15 @@ public class MainActivity extends AppCompatActivity {
         if (aqi < 101) aqiLevel = "良";
         if (aqi < 51) aqiLevel = "优";
         return aqiLevel;
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.imageView_cityList:
+                Intent intent = new Intent(MainActivity.this,CityListActivity.class);
+                startActivity(intent);
+                break;
+        }
     }
 }
