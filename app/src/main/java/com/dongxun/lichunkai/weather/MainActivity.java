@@ -5,11 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import android.Manifest;
-import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -72,12 +68,13 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imageView_loading;
     private LinearLayout LinearLayout_message;
     private Boolean needGetData = true;
+
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == 1){
                 //do something
-                if(needGetData && isNetworkAvailable(MainActivity.this)){
+                if(needGetData && isNetworkConnected(MainActivity.this)){
                     location();
                 }
             }
@@ -253,34 +250,12 @@ public class MainActivity extends AppCompatActivity {
      * 检查当前网络是否可用
      * @return
      */
-
-    public boolean isNetworkAvailable(Activity activity)
-    {
-        Context context = activity.getApplicationContext();
-        // 获取手机所有连接管理对象（包括对wi-fi,net等连接的管理）
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        if (connectivityManager == null)
-        {
-            return false;
-        }
-        else
-        {
-            // 获取NetworkInfo对象
-            NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
-
-            if (networkInfo != null && networkInfo.length > 0)
-            {
-                for (int i = 0; i < networkInfo.length; i++)
-                {
-                    System.out.println(i + "===状态===" + networkInfo[i].getState());
-                    System.out.println(i + "===类型===" + networkInfo[i].getTypeName());
-                    // 判断当前网络状态是否为连接状态
-                    if (networkInfo[i].getState() == NetworkInfo.State.CONNECTED)
-                    {
-                        return true;
-                    }
-                }
+    public boolean isNetworkConnected(Context context) {
+        if (context != null) {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+            if (mNetworkInfo != null) {
+                return mNetworkInfo.isAvailable();
             }
         }
         return false;
@@ -290,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
      * 定位
      */
     public void location(){
-        if (!isNetworkAvailable(this)) {
+        if (!isNetworkConnected(this)) {
             showMessage(4);
             return;
         }
