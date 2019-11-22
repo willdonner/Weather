@@ -5,11 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import android.Manifest;
-import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -42,6 +38,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -69,6 +67,20 @@ public class MainActivity extends AppCompatActivity {
     private TextView textView_loading;
     private ImageView imageView_loading;
     private LinearLayout LinearLayout_message;
+    private Boolean needGetData = true;
+
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == 1){
+                //do something
+                if(needGetData && isNetworkConnected(MainActivity.this)){
+                    location();
+                }
+            }
+            super.handleMessage(msg);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +90,32 @@ public class MainActivity extends AppCompatActivity {
         initView();
         getPermission();
         setBack();
+        reGetData();
+    }
+
+    /**
+     * 每隔一秒请求一次天气数据
+     */
+    private void reGetData() {
+        Timer timer = new Timer();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                Message message = new Message();
+                message.what = 1;
+                handler.sendMessage(message);
+            }
+        };
+        timer.schedule(timerTask,1000,1000);//延时1s，每隔1秒执行一次run方法
+    }
+
+    /**
+     * 双击退出
+     */
+    @Override
+    public void onBackPressed() {
+        //最小化app
+        moveTaskToBack(true);
     }
 
     /**
@@ -212,34 +250,12 @@ public class MainActivity extends AppCompatActivity {
      * 检查当前网络是否可用
      * @return
      */
-
-    public boolean isNetworkAvailable(Activity activity)
-    {
-        Context context = activity.getApplicationContext();
-        // 获取手机所有连接管理对象（包括对wi-fi,net等连接的管理）
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        if (connectivityManager == null)
-        {
-            return false;
-        }
-        else
-        {
-            // 获取NetworkInfo对象
-            NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
-
-            if (networkInfo != null && networkInfo.length > 0)
-            {
-                for (int i = 0; i < networkInfo.length; i++)
-                {
-                    System.out.println(i + "===状态===" + networkInfo[i].getState());
-                    System.out.println(i + "===类型===" + networkInfo[i].getTypeName());
-                    // 判断当前网络状态是否为连接状态
-                    if (networkInfo[i].getState() == NetworkInfo.State.CONNECTED)
-                    {
-                        return true;
-                    }
-                }
+    public boolean isNetworkConnected(Context context) {
+        if (context != null) {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+            if (mNetworkInfo != null) {
+                return mNetworkInfo.isAvailable();
             }
         }
         return false;
@@ -249,7 +265,7 @@ public class MainActivity extends AppCompatActivity {
      * 定位
      */
     public void location(){
-        if (!isNetworkAvailable(this)) {
+        if (!isNetworkConnected(this)) {
             showMessage(4);
             return;
         }
@@ -333,6 +349,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
+                            needGetData = false;
                             String responseData = response.body().string();//处理返回的数据
                             parseJSON(responseData);//解析JSON
                         }
