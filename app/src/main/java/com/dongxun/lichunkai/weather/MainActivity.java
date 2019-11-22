@@ -71,6 +71,19 @@ public class MainActivity extends AppCompatActivity {
     private TextView textView_loading;
     private ImageView imageView_loading;
     private LinearLayout LinearLayout_message;
+    private Boolean needGetData = true;
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == 1){
+                //do something
+                if(needGetData){
+                    location();
+                }
+            }
+            super.handleMessage(msg);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +93,23 @@ public class MainActivity extends AppCompatActivity {
         initView();
         getPermission();
         setBack();
+        reGetData();
+    }
+
+    /**
+     * 每隔一秒请求一次天气数据
+     */
+    private void reGetData() {
+        Timer timer = new Timer();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                Message message = new Message();
+                message.what = 1;
+                handler.sendMessage(message);
+            }
+        };
+        timer.schedule(timerTask,1000,1000);//延时1s，每隔1秒执行一次run方法
     }
 
     /**
@@ -344,6 +374,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
+                            needGetData = false;
                             String responseData = response.body().string();//处理返回的数据
                             parseJSON(responseData);//解析JSON
                         }
