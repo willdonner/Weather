@@ -42,6 +42,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -78,6 +80,15 @@ public class MainActivity extends AppCompatActivity {
         initView();
         getPermission();
         setBack();
+    }
+
+    /**
+     * 双击退出
+     */
+    @Override
+    public void onBackPressed() {
+        //最小化app
+        moveTaskToBack(true);
     }
 
     /**
