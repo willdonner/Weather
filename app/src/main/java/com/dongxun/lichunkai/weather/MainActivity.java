@@ -6,7 +6,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -17,6 +20,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -37,85 +42,19 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
     private LocationManager locationManager;
     private LocationListener locationListener;
     private  String WeatherKey = "e187097c8e703fce523ff6e8204ef8cc";//查询天气key
     private String City = "昆明";//查询城市
-    private String data = "{\n" +
-            "\t\"reason\":\"查询成功\",\n" +
-            "\t\"result\":{\n" +
-            "\t\t\"city\":\"昆明\",\n" +
-            "\t\t\"realtime\":{\n" +
-            "\t\t\t\"temperature\":\"18\",\n" +
-            "\t\t\t\"humidity\":\"41\",\n" +
-            "\t\t\t\"info\":\"阴\",\n" +
-            "\t\t\t\"wid\":\"02\",\n" +
-            "\t\t\t\"direct\":\"西南风\",\n" +
-            "\t\t\t\"power\":\"4级\",\n" +
-            "\t\t\t\"aqi\":\"25\"\n" +
-            "\t\t},\n" +
-            "\t\t\"future\":[\n" +
-            "\t\t\t{\n" +
-            "\t\t\t\t\"date\":\"2019-11-20\",\n" +
-            "\t\t\t\t\"temperature\":\"9\\/21℃\",\n" +
-            "\t\t\t\t\"weather\":\"晴\",\n" +
-            "\t\t\t\t\"wid\":{\n" +
-            "\t\t\t\t\t\"day\":\"00\",\n" +
-            "\t\t\t\t\t\"night\":\"00\"\n" +
-            "\t\t\t\t},\n" +
-            "\t\t\t\t\"direct\":\"西南风转持续无风向\"\n" +
-            "\t\t\t},\n" +
-            "\t\t\t{\n" +
-            "\t\t\t\t\"date\":\"2019-11-21\",\n" +
-            "\t\t\t\t\"temperature\":\"9\\/21℃\",\n" +
-            "\t\t\t\t\"weather\":\"晴\",\n" +
-            "\t\t\t\t\"wid\":{\n" +
-            "\t\t\t\t\t\"day\":\"00\",\n" +
-            "\t\t\t\t\t\"night\":\"00\"\n" +
-            "\t\t\t\t},\n" +
-            "\t\t\t\t\"direct\":\"持续无风向\"\n" +
-            "\t\t\t},\n" +
-            "\t\t\t{\n" +
-            "\t\t\t\t\"date\":\"2019-11-22\",\n" +
-            "\t\t\t\t\"temperature\":\"9\\/21℃\",\n" +
-            "\t\t\t\t\"weather\":\"晴\",\n" +
-            "\t\t\t\t\"wid\":{\n" +
-            "\t\t\t\t\t\"day\":\"00\",\n" +
-            "\t\t\t\t\t\"night\":\"00\"\n" +
-            "\t\t\t\t},\n" +
-            "\t\t\t\t\"direct\":\"持续无风向\"\n" +
-            "\t\t\t},\n" +
-            "\t\t\t{\n" +
-            "\t\t\t\t\"date\":\"2019-11-23\",\n" +
-            "\t\t\t\t\"temperature\":\"8\\/22℃\",\n" +
-            "\t\t\t\t\"weather\":\"晴\",\n" +
-            "\t\t\t\t\"wid\":{\n" +
-            "\t\t\t\t\t\"day\":\"00\",\n" +
-            "\t\t\t\t\t\"night\":\"00\"\n" +
-            "\t\t\t\t},\n" +
-            "\t\t\t\t\"direct\":\"持续无风向\"\n" +
-            "\t\t\t},\n" +
-            "\t\t\t{\n" +
-            "\t\t\t\t\"date\":\"2019-11-24\",\n" +
-            "\t\t\t\t\"temperature\":\"8\\/20℃\",\n" +
-            "\t\t\t\t\"weather\":\"多云\",\n" +
-            "\t\t\t\t\"wid\":{\n" +
-            "\t\t\t\t\t\"day\":\"01\",\n" +
-            "\t\t\t\t\t\"night\":\"01\"\n" +
-            "\t\t\t\t},\n" +
-            "\t\t\t\t\"direct\":\"西南风转持续无风向\"\n" +
-            "\t\t\t}\n" +
-            "\t\t]\n" +
-            "\t},\n" +
-            "\t\"error_code\":0\n" +
-            "}";
     private ImageView imageView_back;
     private TextView textView_city;
     private TextView textView_temperature;
@@ -130,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView textView_loading;
     private ImageView imageView_loading;
     private LinearLayout LinearLayout_message;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,8 +85,8 @@ public class MainActivity extends AppCompatActivity {
      * @param state 0：正在定位，1：正在更新，2：更新成功，3：更新失败，4：网络不可用
      */
     private void showMessage(final int state) {
-        //一秒钟显示信息
-        CountDownTimer countDownTimer = new CountDownTimer(1*1000, 1000) {
+        //一秒钟显示信息(数据获取成功则显示2秒，失败则一直显示)
+        CountDownTimer countDownTimer = new CountDownTimer(1*1000, 2000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 switch (state){
@@ -172,20 +110,13 @@ public class MainActivity extends AppCompatActivity {
                         imageView_loading.setImageResource(R.drawable.logo_fail);
                         textView_loading.setText("网络不可用");
                         break;
-
                 }
             }
             @Override
             public void onFinish() {
                 switch (state){
-                    case 0:
-                        break;
-                    case 1:
-                        break;
                     case 2:
                         LinearLayout_message.setVisibility(View.GONE);
-                        break;
-                    case 3:
                         break;
                 }
             }
@@ -193,14 +124,32 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 设置背景图片位置和图片
+     * 设置背景图片和位置
      */
     private void setBack() {
+        imageView_back.setImageResource(getBackImg());
         WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
         int height = wm.getDefaultDisplay().getHeight();
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.topMargin = -(height - imageView_back.getHeight())/2;
         imageView_back.setLayoutParams(layoutParams);
+    }
+
+    /**
+     * 根据季节显示背景图
+     */
+    private int getBackImg() {
+        switch (Integer.parseInt(new SimpleDateFormat("MM").format(new Date()))){
+            case 3: case 4:case 5:
+                return R.drawable.back_spring;
+            case 6: case 7:case 8:
+                return R.drawable.back_summer;
+            case 9: case 10:case 11:
+                return R.drawable.back_autumn;
+            case 12: case 1:case 2:
+                return R.drawable.back_winter;
+        }
+        return R.drawable.back_spring;
     }
 
 
@@ -373,9 +322,21 @@ public class MainActivity extends AppCompatActivity {
                     Request request = new Request.Builder()
                             .url("https://apis.juhe.cn/simpleWeather/query?city="+city+"&key="+WeatherKey+"")
                             .build();//创建一个Request对象
-                    Response response = client.newCall(request).execute();//发送请求获取返回数据
-                    String responseData = response.body().string();//处理返回的数据
-                    parseJSON(responseData);//解析JSON
+                    //第三步构建Call对象
+                    Call call = client.newCall(request);
+                    //第四步:异步get请求
+                    call.enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            //显示信息
+                            showMessage(3);
+                        }
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            String responseData = response.body().string();//处理返回的数据
+                            parseJSON(responseData);//解析JSON
+                        }
+                    });
                 }catch (Exception e){
                     e.printStackTrace();
                 }
