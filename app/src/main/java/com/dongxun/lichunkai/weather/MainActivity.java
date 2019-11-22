@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -49,6 +50,7 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+    private String TAG = "MainActivity";
     private LocationManager locationManager;
     private LocationListener locationListener;
     private  String WeatherKey = "e187097c8e703fce523ff6e8204ef8cc";//查询天气key
@@ -104,17 +106,20 @@ public class MainActivity extends AppCompatActivity {
                 Message message = new Message();
                 message.what = 1;
                 handler.sendMessage(message);
+                //如果获取到了天气数据，停止该线程
+                if (!needGetData){
+                    cancel();
+                }
             }
         };
         timer.schedule(timerTask,1000,1000);//延时1s，每隔1秒执行一次run方法
     }
 
     /**
-     * 双击退出
+     * 最小化app
      */
     @Override
     public void onBackPressed() {
-        //最小化app
         moveTaskToBack(true);
     }
 
