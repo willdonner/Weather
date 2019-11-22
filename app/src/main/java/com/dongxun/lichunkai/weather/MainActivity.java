@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -12,10 +13,15 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -121,6 +127,9 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<FutureInfo> futureInfos = new ArrayList<>();
     private ListView ListView_future;
     private TextView textView_time;
+    private TextView textView_loading;
+    private ImageView imageView_loading;
+    private LinearLayout LinearLayout_message;
 
 
     @Override
@@ -128,9 +137,59 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        getPermission();
         initView();
+        getPermission();
         setBack();
+    }
+
+    /**
+     * 显示信息
+     * @param state 0：正在定位，1：正在更新，2：更新成功，3：更新失败，4：网络不可用
+     */
+    private void showMessage(final int state) {
+        //一秒钟显示信息
+        CountDownTimer countDownTimer = new CountDownTimer(1*1000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                switch (state){
+                    case 0:
+                        imageView_loading.setImageResource(R.drawable.logo_location);
+                        textView_loading.setText("正在定位");
+                        break;
+                    case 1:
+                        imageView_loading.setImageResource(R.drawable.logo_loading);
+                        textView_loading.setText("正在更新");
+                        break;
+                    case 2:
+                        imageView_loading.setImageResource(R.drawable.logo_succcess);
+                        textView_loading.setText("更新成功");
+                        break;
+                    case 3:
+                        imageView_loading.setImageResource(R.drawable.logo_fail);
+                        textView_loading.setText("更新失败");
+                        break;
+                    case 4:
+                        imageView_loading.setImageResource(R.drawable.logo_fail);
+                        textView_loading.setText("网络不可用");
+                        break;
+
+                }
+            }
+            @Override
+            public void onFinish() {
+                switch (state){
+                    case 0:
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        LinearLayout_message.setVisibility(View.GONE);
+                        break;
+                    case 3:
+                        break;
+                }
+            }
+        }.start();
     }
 
     /**
@@ -159,19 +218,18 @@ public class MainActivity extends AppCompatActivity {
         textView_power = findViewById(R.id.textView_power);
         ListView_future = findViewById(R.id.ListView_future);
         textView_time = findViewById(R.id.textView_time);
+        textView_loading = findViewById(R.id.textView_loading);
+        imageView_loading = findViewById(R.id.imageView_loading);
+        LinearLayout_message = findViewById(R.id.LinearLayout_message);
     }
 
-    /**
-     * 显示信息
-     */
-    private void showMessage() {
-
-    }
 
     /**
      * 定位后根据城市查询天气
      */
     private void getDataByCity() {
+        //显示信息
+        showMessage(0);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
             return;
         }
@@ -181,6 +239,9 @@ public class MainActivity extends AppCompatActivity {
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
         locationManager.removeUpdates(locationListener);
+
+        //显示信息
+        showMessage(1);
         // 发送查询天气请求
         sendRequestWithOkHttp(City);
     }
@@ -199,9 +260,50 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * 检查当前网络是否可用
+     * @return
+     */
+
+    public boolean isNetworkAvailable(Activity activity)
+    {
+        Context context = activity.getApplicationContext();
+        // 获取手机所有连接管理对象（包括对wi-fi,net等连接的管理）
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (connectivityManager == null)
+        {
+            return false;
+        }
+        else
+        {
+            // 获取NetworkInfo对象
+            NetworkInfo[] networkInfo = connectivityManager.getAllNetworkInfo();
+
+            if (networkInfo != null && networkInfo.length > 0)
+            {
+                for (int i = 0; i < networkInfo.length; i++)
+                {
+                    System.out.println(i + "===状态===" + networkInfo[i].getState());
+                    System.out.println(i + "===类型===" + networkInfo[i].getTypeName());
+                    // 判断当前网络状态是否为连接状态
+                    if (networkInfo[i].getState() == NetworkInfo.State.CONNECTED)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * 定位
      */
     public void location(){
+        if (!isNetworkAvailable(this)) {
+            showMessage(4);
+            return;
+        }
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationListener = new LocationListener() {
             @Override
@@ -340,7 +442,8 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
+                //显示信息
+                showMessage(3);
             }
         });
     }
@@ -353,6 +456,8 @@ public class MainActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                //显示信息
+                showMessage(2);
 //                textView_reason.setText(reason);
                 textView_city.setText(city);
                 textView_temperature.setText(realtimeInfo.getTemperature() + "°");
