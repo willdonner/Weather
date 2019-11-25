@@ -57,8 +57,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String TAG = "MainActivity";
     private LocationManager locationManager;
     private LocationListener locationListener;
-    private String WeatherKey = "e187097c8e703fce523ff6e8204ef8cc";//查询天气key
-    private String WeatherKey2 = "8843798dfd89eeab638b8396174a9c84";
     private String City = "昆明";//查询城市
     private ImageView imageView_back;
     private TextView textView_city;
@@ -76,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout LinearLayout_message;
     private Boolean needGetData = true;
     private ImageView imageView_cityList;
+    private String WeatherApiKey;
     private RealtimeInfo realtimeInfo = new RealtimeInfo();;
 
     Handler handler = new Handler() {
@@ -95,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        WeatherApiKey = getResources().getString(R.string.apikey);
         ImmersionBar.with(this).init();
         initView();
         getPermission();
@@ -116,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 handler.sendMessage(message);
                 //如果获取到了天气数据，停止该线程
                 if (!needGetData){
-                    cancel();
+                     cancel();
                 }
             }
         };
@@ -350,7 +349,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 try{
                     OkHttpClient client = new OkHttpClient();//新建一个OKHttp的对象
                     Request request = new Request.Builder()
-                            .url("https://apis.juhe.cn/simpleWeather/query?city="+city+"&key="+WeatherKey2+"")
+                            .url("https://apis.juhe.cn/simpleWeather/query?city="+city+"&key="+WeatherApiKey+"")
                             .build();//创建一个Request对象
                     //第三步构建Call对象
                     Call call = client.newCall(request);
