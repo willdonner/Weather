@@ -62,6 +62,12 @@ public class SelectCityActivity extends AppCompatActivity implements View.OnClic
         imageView_back.setOnClickListener(this);
         editText = findViewById(R.id.editText);
         editText.findFocus();
+        editText.setFocusable(true);
+        editText.setFocusableInTouchMode(true);
+        editText.requestFocus();
+        InputMethodManager inputManager = (InputMethodManager)editText.getContext()
+                .getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputManager.showSoftInput(editText,0);
     }
 
     @Override
