@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.gyf.immersionbar.ImmersionBar;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class CityListActivity extends AppCompatActivity implements View.OnClickL
     private ImageView imageView_edit;
     private ListView listView_city;
     private ArrayList<RealtimeInfo> realtimeInfos = new ArrayList<>();
+    private FloatingActionButton floatingActionButton_add;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,8 @@ public class CityListActivity extends AppCompatActivity implements View.OnClickL
         imageView_edit = findViewById(R.id.imageView_edit);
         imageView_edit.setOnClickListener(this);
         listView_city = findViewById(R.id.listView_city);
+        floatingActionButton_add = findViewById(R.id.floatingActionButton_add);
+        floatingActionButton_add.setOnClickListener(this);
     }
 
     /**
@@ -91,6 +95,10 @@ public class CityListActivity extends AppCompatActivity implements View.OnClickL
                 finish();
                 break;
             case R.id.imageView_edit:
+                break;
+            case R.id.floatingActionButton_add:
+                Intent intent = new Intent(CityListActivity.this,SelectCityActivity.class);
+                startActivity(intent);
                 break;
         }
     }

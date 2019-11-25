@@ -30,7 +30,7 @@
                     android:id="@+id/imageView_back"
                     android:layout_width="20dp"
                     android:layout_height="16dp"
-                    android:layout_marginLeft="30dp"
+                    android:layout_marginLeft="20dp"
                     app:srcCompat="@drawable/logo_back" />
 
                 <TextView
@@ -47,7 +47,7 @@
                     android:id="@+id/imageView_edit"
                     android:layout_width="20dp"
                     android:layout_height="16dp"
-                    android:layout_marginRight="30dp"
+                    android:layout_marginRight="20dp"
                     app:srcCompat="@drawable/logo_edit2" />
 
             </LinearLayout>
@@ -55,7 +55,6 @@
         </LinearLayout>
 
         <FrameLayout
-            android:id="@+id/ad"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/LinearLayout_title"
@@ -68,13 +67,13 @@
                 android:layout_margin="6dp"
                 android:divider="@null"
                 android:dividerHeight="6dp"
-                tools:visibility="visible" >
+                tools:visibility="visible">
 
 
             </ListView>
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/floatingActionButton6"
+                android:id="@+id/floatingActionButton_add"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|right"
