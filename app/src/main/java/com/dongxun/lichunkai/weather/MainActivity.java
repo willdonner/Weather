@@ -57,8 +57,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String TAG = "MainActivity";
     private LocationManager locationManager;
     private LocationListener locationListener;
-//    private  String WeatherKey = "e187097c8e703fce523ff6e8204ef8cc";//lck查询天气key
-    private  String WeatherKey = "8843798dfd89eeab638b8396174a9c84";//ysd查询天气key
     private String City = "昆明";//查询城市
     private ImageView imageView_back;
     private TextView textView_city;
@@ -77,6 +75,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Boolean needGetData = true;
     private ImageView imageView_cityList;
     private String WeatherApiKey;
+    private RealtimeInfo realtimeInfo = new RealtimeInfo();;
+
     Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -390,7 +390,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //当前天气信息
                 JSONObject realtime = response.getJSONObject("result").getJSONObject("realtime");
 
-                RealtimeInfo realtimeInfo = new RealtimeInfo();
                 realtimeInfo.setAqi(realtime.getString("aqi"));
                 realtimeInfo.setDirect(realtime.getString("direct"));
                 realtimeInfo.setHumidity(realtime.getString("humidity"));
@@ -583,6 +582,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (view.getId()){
             case R.id.imageView_cityList:
                 Intent intent = new Intent(MainActivity.this,CityListActivity.class);
+                if (!realtimeInfo.getInfo().equals("")) {
+                    intent.putExtra("realtimeInfo",realtimeInfo);
+                }
                 startActivity(intent);
                 break;
         }

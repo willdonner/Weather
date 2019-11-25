@@ -1,9 +1,11 @@
 package com.dongxun.lichunkai.weather;
 
+import java.io.Serializable;
+
 /**
  * 当前天气信息类
  */
-public class RealtimeInfo {
+public class RealtimeInfo implements Serializable {
     private String temperature;
     private String humidity;
     private String info;
@@ -11,6 +13,24 @@ public class RealtimeInfo {
     private String power;
     private String direct;
     private String aqi;
+    private String city;
+    private Boolean currentCity;
+
+    public Boolean getCurrentCity() {
+        return currentCity;
+    }
+
+    public void setCurrentCity(Boolean currentCity) {
+        this.currentCity = currentCity;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
 
     public String getTemperature() {
         return temperature;
