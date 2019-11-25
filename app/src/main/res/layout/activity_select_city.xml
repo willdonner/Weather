@@ -94,6 +94,11 @@
                         app:srcCompat="@drawable/logo_location3" />
                 </LinearLayout>
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/RecyclerView_hotCity"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+
             </LinearLayout>
 
         </LinearLayout>
