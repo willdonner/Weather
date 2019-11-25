@@ -6,13 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".CityListActivity">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="#e7f0ef"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:ignore="MissingConstraints">
 
         <LinearLayout
+            android:id="@+id/LinearLayout_title"
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:background="#f3f7f8"
@@ -26,7 +28,7 @@
 
                 <ImageView
                     android:id="@+id/imageView_back"
-                    android:layout_width="16dp"
+                    android:layout_width="20dp"
                     android:layout_height="16dp"
                     android:layout_marginLeft="30dp"
                     app:srcCompat="@drawable/logo_back" />
@@ -39,33 +41,51 @@
                     android:gravity="center"
                     android:text="城市管理"
                     android:textColor="#000000"
-                    android:textSize="18sp" />
+                    android:textSize="16sp" />
 
                 <ImageView
                     android:id="@+id/imageView_edit"
-                    android:layout_width="16dp"
+                    android:layout_width="20dp"
                     android:layout_height="16dp"
                     android:layout_marginRight="30dp"
-                    app:srcCompat="@drawable/logo_wrong" />
+                    app:srcCompat="@drawable/logo_edit2" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <LinearLayout
+        <FrameLayout
+            android:id="@+id/ad"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@+id/LinearLayout_title"
             android:orientation="vertical">
 
             <ListView
                 android:id="@+id/listView_city"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_margin="6dp"
                 android:divider="@null"
                 android:dividerHeight="6dp"
-                tools:visibility="visible" />
-        </LinearLayout>
+                tools:visibility="visible" >
 
-    </LinearLayout>
+
+            </ListView>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/floatingActionButton6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|right"
+                android:layout_margin="20dp"
+                android:clickable="true"
+                app:backgroundTint="#4397c6"
+                app:fabSize="mini"
+                app:srcCompat="@drawable/logo_add" />
+
+        </FrameLayout>
+
+    </RelativeLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
