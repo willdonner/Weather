@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private LinearLayout LinearLayout_message;
     private Boolean needGetData = true;
     private ImageView imageView_cityList;
+    private RealtimeInfo realtimeInfo = new RealtimeInfo();;
 
     Handler handler = new Handler() {
         @Override
@@ -390,7 +391,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //当前天气信息
                 JSONObject realtime = response.getJSONObject("result").getJSONObject("realtime");
 
-                RealtimeInfo realtimeInfo = new RealtimeInfo();
                 realtimeInfo.setAqi(realtime.getString("aqi"));
                 realtimeInfo.setDirect(realtime.getString("direct"));
                 realtimeInfo.setHumidity(realtime.getString("humidity"));
@@ -583,6 +583,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (view.getId()){
             case R.id.imageView_cityList:
                 Intent intent = new Intent(MainActivity.this,CityListActivity.class);
+                if (!realtimeInfo.getInfo().equals("")) {
+                    intent.putExtra("realtimeInfo",realtimeInfo);
+                }
                 startActivity(intent);
                 break;
         }

@@ -3,17 +3,26 @@ package com.dongxun.lichunkai.weather;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.gyf.immersionbar.ImmersionBar;
 
+import java.util.ArrayList;
+
 public class CityListActivity extends AppCompatActivity implements View.OnClickListener {
 
+
+    private String TAG = "CityListActivity";
     private ImageView imageView_back;
     private ImageView imageView_edit;
+    private ListView listView_city;
+    private ArrayList<RealtimeInfo> realtimeInfos = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +31,21 @@ public class CityListActivity extends AppCompatActivity implements View.OnClickL
 
         initBar();
         initView();
+        setAdapter();
 
+    }
+
+    /**
+     * 设置城市列表适配器
+     */
+    private void setAdapter() {
+        RealtimeInfo realtimeInfo = (RealtimeInfo)getIntent().getSerializableExtra("realtimeInfo");
+        realtimeInfos.add(realtimeInfo);
+        realtimeInfos.add(realtimeInfo);
+        realtimeInfos.add(realtimeInfo);
+
+        CityAdapter cityAdapter = new CityAdapter(CityListActivity.this,R.layout.city,realtimeInfos);
+        listView_city.setAdapter(cityAdapter);
     }
 
     /**
@@ -33,6 +56,7 @@ public class CityListActivity extends AppCompatActivity implements View.OnClickL
         imageView_back.setOnClickListener(this);
         imageView_edit = findViewById(R.id.imageView_edit);
         imageView_edit.setOnClickListener(this);
+        listView_city = findViewById(R.id.listView_city);
     }
 
     /**
