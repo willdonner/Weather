@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Boolean needGetData = true;
     private ImageView imageView_cityList;
     private String WeatherApiKey;
+    private String WeatherApiKey_backup;
     private RealtimeInfo realtimeInfo = new RealtimeInfo();;
 
     Handler handler = new Handler() {
@@ -95,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         WeatherApiKey = getResources().getString(R.string.apikey);
+        WeatherApiKey_backup = getResources().getString(R.string.apikey_backup);
         ImmersionBar.with(this).init();
         initView();
         getPermission();
@@ -243,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //显示信息
         showMessage(1);
         // 发送查询天气请求
-        sendRequestWithOkHttp(City);
+        sendRequestWithOkHttp(City,WeatherApiKey);
     }
 
     /**
@@ -342,14 +344,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * 请求天气数据
      */
-    private void sendRequestWithOkHttp(final String city){
+    private void sendRequestWithOkHttp(final String city,final String apikey){
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try{
                     OkHttpClient client = new OkHttpClient();//新建一个OKHttp的对象
                     Request request = new Request.Builder()
-                            .url("https://apis.juhe.cn/simpleWeather/query?city="+city+"&key="+WeatherApiKey+"")
+                            .url("https://apis.juhe.cn/simpleWeather/query?city="+city+"&key="+apikey+"")
                             .build();//创建一个Request对象
                     //第三步构建Call对象
                     Call call = client.newCall(request);
@@ -364,6 +366,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         public void onResponse(Call call, Response response) throws IOException {
                             needGetData = false;
                             String responseData = response.body().string();//处理返回的数据
+                            try {
+                                JSONObject responses = new JSONObject(responseData);
+                                String error_code = responses.getString("resultcode");
+                                if(error_code.equals("112")){
+                                    sendRequestWithOkHttp(city,WeatherApiKey_backup);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                             parseJSON(responseData);//解析JSON
                         }
                     });
