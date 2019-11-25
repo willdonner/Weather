@@ -1,6 +1,9 @@
 package com.dongxun.lichunkai.weather;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,16 +12,24 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.gyf.immersionbar.ImmersionBar;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SelectCityActivity extends AppCompatActivity implements View.OnClickListener {
 
     private String TAG = "SelectCityActivity";
     private ImageView imageView_back;
     private EditText editText;
+    private GridView gridView_hotCity;
+    private List<HotCity> cityList = new ArrayList<>();
+    private String[] cityArray = {"定位","北京","上海","广州","深圳","珠海","佛山","南京","苏州","厦门","长沙",
+            "成都","佛州","杭州","武汉","青岛","西安","太原","石家庄","沈阳","重庆","天津","南宁"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +38,22 @@ public class SelectCityActivity extends AppCompatActivity implements View.OnClic
 
         initBar();
         initView();
+        setAdapter();
+    }
+
+    /**
+     * 设置热门城市适配器
+     */
+    private void setAdapter() {
+        for (int i = 0;i < cityArray.length;i++) {
+            HotCity hotCity = new HotCity();
+            hotCity.setName(cityArray[i]);
+            hotCity.setLocation(i==0?true:false);
+            cityList.add(hotCity);
+        }
+        HotCityAdapter hotCityAdapter = new HotCityAdapter(this, cityList);
+        gridView_hotCity.setAdapter(hotCityAdapter);
+
     }
 
 
@@ -61,13 +88,13 @@ public class SelectCityActivity extends AppCompatActivity implements View.OnClic
         imageView_back = findViewById(R.id.imageView_back);
         imageView_back.setOnClickListener(this);
         editText = findViewById(R.id.editText);
-        editText.findFocus();
         editText.setFocusable(true);
         editText.setFocusableInTouchMode(true);
         editText.requestFocus();
         InputMethodManager inputManager = (InputMethodManager)editText.getContext()
                 .getSystemService(Context.INPUT_METHOD_SERVICE);
         inputManager.showSoftInput(editText,0);
+        gridView_hotCity = findViewById(R.id.gridView_hotCity);
     }
 
     @Override
