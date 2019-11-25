@@ -40,7 +40,8 @@
                         android:id="@+id/imageView_currentCity"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        app:srcCompat="@drawable/logo_location2" />
+                        android:layout_marginLeft="4dp"
+                        app:srcCompat="@drawable/logo_location3" />
 
                 </LinearLayout>
 
