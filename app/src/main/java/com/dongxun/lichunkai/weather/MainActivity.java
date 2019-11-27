@@ -76,7 +76,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView imageView_cityList;
     private String WeatherApiKey;
     private String WeatherApiKey_backup;
-    private RealtimeInfo realtimeInfo = new RealtimeInfo();;
+
+    private String newWeatherApiKey;;
+    private RealtimeInfo realtimeInfo = new RealtimeInfo();
 
     Handler handler = new Handler() {
         @Override
@@ -95,12 +97,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //聚合天气api
         WeatherApiKey = getResources().getString(R.string.apikey);
         WeatherApiKey_backup = getResources().getString(R.string.apikey_backup);
+
+        //和风天气api
+        newWeatherApiKey = getResources().getString(R.string.newapikey);
+
         ImmersionBar.with(this).init();
         initView();
-        getPermission();
         setBack();
+        getPermission();
         reGetData();
     }
 
@@ -246,6 +253,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         showMessage(1);
         // 发送查询天气请求
         sendRequestWithOkHttp(City,WeatherApiKey);
+        AirsendRequestWithOkHttp(City,newWeatherApiKey);
+        forecastsendRequestWithOkHttp(City,newWeatherApiKey);
     }
 
     /**
@@ -350,8 +359,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void run() {
                 try{
                     OkHttpClient client = new OkHttpClient();//新建一个OKHttp的对象
+                    //聚合请求方式
+//                    Request request = new Request.Builder()
+//                            .url("https://apis.juhe.cn/simpleWeather/query?city="+city+"&key="+apikey+"")
+//                            .build();//创建一个Request对象
+                    //和风请求方式
                     Request request = new Request.Builder()
-                            .url("https://apis.juhe.cn/simpleWeather/query?city="+city+"&key="+apikey+"")
+                            .url("https://free-api.heweather.net/s6/weather/now?location="+city+"&key="+newWeatherApiKey+"")
                             .build();//创建一个Request对象
                     //第三步构建Call对象
                     Call call = client.newCall(request);
@@ -375,7 +389,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            parseJSON(responseData);//解析JSON
+                            try {
+                                JSONObject responses = new JSONObject(responseData);
+                                String newresponse = responses.getString("HeWeather6");
+                                parseJSON(newresponse);//解析JSON
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
                         }
                     });
                 }catch (Exception e){
@@ -386,55 +407,296 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
+     * 请求天气空气质量数据
+     */
+    private void AirsendRequestWithOkHttp(final String city,final String apikey){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    OkHttpClient client = new OkHttpClient();//新建一个OKHttp的对象
+
+                    //和风请求方式
+                    Request request = new Request.Builder()
+                            .url("https://free-api.heweather.net/s6/air/now?location="+city+"&key="+newWeatherApiKey+"")
+                            .build();//创建一个Request对象
+                    //第三步构建Call对象
+                    Call call = client.newCall(request);
+                    //第四步:异步get请求
+                    call.enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            //显示信息
+                            showMessage(3);
+                        }
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            needGetData = false;
+                            String responseData = response.body().string();//处理返回的数据
+                            try {
+                                JSONObject responses = new JSONObject(responseData);
+                                String newresponse = responses.getString("HeWeather6");
+                                AirparseJSON(newresponse);//解析JSON
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    });
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * 请求天气未来7天的天气数据
+     */
+    private void forecastsendRequestWithOkHttp(final String city,final String apikey){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    OkHttpClient client = new OkHttpClient();//新建一个OKHttp的对象
+
+                    //和风请求方式
+                    Request request = new Request.Builder()
+                            .url("https://free-api.heweather.net/s6/weather/forecast?location="+city+"&key="+newWeatherApiKey+"")
+                            .build();//创建一个Request对象
+                    //第三步构建Call对象
+                    Call call = client.newCall(request);
+                    //第四步:异步get请求
+                    call.enqueue(new Callback() {
+                        @Override
+                        public void onFailure(Call call, IOException e) {
+                            //显示信息
+                            showMessage(3);
+                        }
+                        @Override
+                        public void onResponse(Call call, Response response) throws IOException {
+                            needGetData = false;
+                            String responseData = response.body().string();//处理返回的数据
+                            try {
+                                JSONObject responses = new JSONObject(responseData);
+                                String newresponse = responses.getString("HeWeather6");
+                                forecastparseJSON(newresponse);//解析JSON
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    });
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    //和风API
+    // 解析当前天气未来天气
+    /**
      * 解析JSON
      * @param responseData
      */
-    private void parseJSON(String responseData) {
+    private void forecastparseJSON(String responseData) {
+        String basic= null,status = null,now= null,daily_forecast = null;
         try {
-            JSONObject response = new JSONObject(responseData);
-            String error_code = response.getString("error_code");
-            String reason = response.getString("reason");
-            if (error_code.equals("0")) {
-                //城市
-                String city = response.getJSONObject("result").getString("city");
-
-                //当前天气信息
-                JSONObject realtime = response.getJSONObject("result").getJSONObject("realtime");
-
-                realtimeInfo.setAqi(realtime.getString("aqi"));
-                realtimeInfo.setDirect(realtime.getString("direct"));
-                realtimeInfo.setHumidity(realtime.getString("humidity"));
-                realtimeInfo.setInfo(realtime.getString("info"));
-                realtimeInfo.setPower(realtime.getString("power"));
-                realtimeInfo.setTemperature(realtime.getString("temperature"));
-                realtimeInfo.setWid(realtime.getString("wid"));
-
+            JSONArray arr = new JSONArray(responseData);
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject temp = (JSONObject) arr.get(i);
+                basic = temp.getString("basic");
+                status = temp.getString("status");
+                daily_forecast = temp.getString("daily_forecast");
+            }
+            if (status.equals("ok")) {
+                //当前空气质量信息
+                JSONArray jsonObjectnow = new JSONArray(daily_forecast);
                 //未来天气信息
-                JSONArray JSONArray_future = response.getJSONObject("result").getJSONArray("future");
-
-                for (int i = 0;i < JSONArray_future.length();i++) {
-                    JSONObject future = JSONArray_future.getJSONObject(i);
+//                JSONArray JSONArray_future = jsonObjectbasic.getJSONObject("result").getJSONArray("future");
+//
+                for (int i = 0;i < jsonObjectnow.length();i++) {
+                    JSONObject future = jsonObjectnow.getJSONObject(i);
 
                     FutureInfo futureInfo = new FutureInfo();
                     futureInfo.setDate(future.getString("date"));
-                    futureInfo.setTemperature(future.getString("temperature"));
-                    futureInfo.setWeather(future.getString("weather"));
-                    futureInfo.setWid_day(future.getJSONObject("wid").getString("day"));
-                    futureInfo.setWid_night(future.getJSONObject("wid").getString("night"));
-                    futureInfo.setDirect(future.getString("direct"));
+//                    futureInfo.setTemperature(future.getString("pop"));
+                    futureInfo.setWeather(future.getString("cond_txt_n"));
+//                    futureInfo.setWid_day(future.getString("wind_deg"));
+//                    futureInfo.setWid_night(future.getString("wind_sc"));
+//                    futureInfo.setDirect(future.getString("wind_dir"));
                     futureInfo.setToday(i == 0?true:false);
                     futureInfo.setWeek(getWeek(future.getString("date")));
-                    futureInfo.setWid_img(getWidImg(isDay()?future.getJSONObject("wid").getString("day"):future.getJSONObject("wid").getString("night"),false));
+//                    futureInfo.setWid_img(1);
                     futureInfos.add(futureInfo);
                 }
-                searchSuccess(reason,city,realtimeInfo,futureInfos);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        FutureAdapter myAdapter = new FutureAdapter(MainActivity.this,R.layout.future,futureInfos);
+                        ListView_future.setAdapter(myAdapter);
+                    }});
+
             }else {
-                searchFail(reason);
+                searchFail("");
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
+
+
+
+
+    //和风API
+    // 解析当前天气的空气质量
+    /**
+     * 解析JSON
+     * @param responseData
+     */
+    private void AirparseJSON(String responseData) {
+        String basic= null,status = null,now= null,air_now_city = null;
+        try {
+            JSONArray arr = new JSONArray(responseData);
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject temp = (JSONObject) arr.get(i);
+                basic = temp.getString("basic");
+                status = temp.getString("status");
+                air_now_city = temp.getString("air_now_city");
+            }
+            if (status.equals("ok")) {
+                //当前空气质量信息
+                JSONObject jsonObjectnow = new JSONObject(air_now_city);
+                   final String air_q = jsonObjectnow.optString("aqi");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        textView_aqi.setText("空气" + getAqiLevel(Integer.parseInt(air_q)) + " " + air_q);
+                    }});
+            }else {
+                searchFail("");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //和风API
+    // 解析当前天气
+    /**
+     * 解析JSON
+     * @param responseData
+     */
+    private void parseJSON(String responseData) {
+        String basic= null,status = null,now= null,air_now_city = null;
+        try {
+            JSONArray arr = new JSONArray(responseData);
+
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject temp = (JSONObject) arr.get(i);
+                basic = temp.getString("basic");
+                status = temp.getString("status");
+                now = temp.getString("now");
+            }
+            JSONObject jsonObjectbasic = new JSONObject(basic);
+
+            if (status.equals("ok")) {
+                //城市
+                String city = jsonObjectbasic.optString("location");
+
+                //当前天气信息
+                JSONObject jsonObjectnow = new JSONObject(now);
+//                JSONObject realtime = response.getJSONObject("result").getJSONObject("realtime");
+//
+//                realtimeInfo.setAqi(jsonObjectnow.optString("wind_deg"));
+                realtimeInfo.setDirect(jsonObjectnow.optString("wind_dir"));
+                realtimeInfo.setHumidity(jsonObjectnow.optString("hum"));
+                realtimeInfo.setInfo(jsonObjectnow.optString("cond_txt"));
+                realtimeInfo.setPower(jsonObjectnow.optString("wind_sc"));
+                realtimeInfo.setTemperature(jsonObjectnow.getString("tmp"));
+                realtimeInfo.setWid(jsonObjectnow.getString("cond_code"));
+
+                //未来天气信息
+//                JSONArray JSONArray_future = jsonObjectbasic.getJSONObject("result").getJSONArray("future");
+//
+//                for (int i = 0;i < JSONArray_future.length();i++) {
+//                    JSONObject future = JSONArray_future.getJSONObject(i);
+//
+//                    FutureInfo futureInfo = new FutureInfo();
+//                    futureInfo.setDate(future.getString("date"));
+//                    futureInfo.setTemperature(future.getString("temperature"));
+//                    futureInfo.setWeather(future.getString("weather"));
+//                    futureInfo.setWid_day(future.getJSONObject("wid").getString("day"));
+//                    futureInfo.setWid_night(future.getJSONObject("wid").getString("night"));
+//                    futureInfo.setDirect(future.getString("direct"));
+//                    futureInfo.setToday(i == 0?true:false);
+//                    futureInfo.setWeek(getWeek(future.getString("date")));
+//                    futureInfo.setWid_img(getWidImg(isDay()?future.getJSONObject("wid").getString("day"):future.getJSONObject("wid").getString("night"),false));
+//                    futureInfos.add(futureInfo);
+//                }
+                searchSuccess("",city,realtimeInfo);
+            }else {
+                searchFail("");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    //聚合api解析
+//    /**
+//     * 解析JSON
+//     * @param responseData
+//     */
+//    private void parseJSON(String responseData) {
+//        try {
+//            JSONObject response = new JSONObject(responseData);
+//            String error_code = response.getString("error_code");
+//            String reason = response.getString("reason");
+//            if (error_code.equals("0")) {
+//                //城市
+//                String city = response.getJSONObject("result").getString("city");
+//
+//                //当前天气信息
+//                JSONObject realtime = response.getJSONObject("result").getJSONObject("realtime");
+//
+//                realtimeInfo.setAqi(realtime.getString("aqi"));
+//                realtimeInfo.setDirect(realtime.getString("direct"));
+//                realtimeInfo.setHumidity(realtime.getString("humidity"));
+//                realtimeInfo.setInfo(realtime.getString("info"));
+//                realtimeInfo.setPower(realtime.getString("power"));
+//                realtimeInfo.setTemperature(realtime.getString("temperature"));
+//                realtimeInfo.setWid(realtime.getString("wid"));
+//
+//                //未来天气信息
+//                JSONArray JSONArray_future = response.getJSONObject("result").getJSONArray("future");
+//
+//                for (int i = 0;i < JSONArray_future.length();i++) {
+//                    JSONObject future = JSONArray_future.getJSONObject(i);
+//
+//                    FutureInfo futureInfo = new FutureInfo();
+//                    futureInfo.setDate(future.getString("date"));
+//                    futureInfo.setTemperature(future.getString("temperature"));
+//                    futureInfo.setWeather(future.getString("weather"));
+//                    futureInfo.setWid_day(future.getJSONObject("wid").getString("day"));
+//                    futureInfo.setWid_night(future.getJSONObject("wid").getString("night"));
+//                    futureInfo.setDirect(future.getString("direct"));
+//                    futureInfo.setToday(i == 0?true:false);
+//                    futureInfo.setWeek(getWeek(future.getString("date")));
+//                    futureInfo.setWid_img(getWidImg(isDay()?future.getJSONObject("wid").getString("day"):future.getJSONObject("wid").getString("night"),false));
+//                    futureInfos.add(futureInfo);
+//                }
+//                searchSuccess(reason,city,realtimeInfo,futureInfos);
+//            }else {
+//                searchFail(reason);
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     /**
      * 查询天气失败，更新UI
@@ -453,7 +715,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 查询天气成功，更新UI
      * @param reason
      */
-    private void searchSuccess(final String reason, final String city, final RealtimeInfo realtimeInfo, final ArrayList<FutureInfo> futureInfos){
+    private void searchSuccess(final String reason, final String city, final RealtimeInfo realtimeInfo){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -466,11 +728,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 textView_info.setText(realtimeInfo.getInfo());
                 imageView_wid.setImageResource(getWidImg(realtimeInfo.getWid(),true));
                 textView_power.setText("风力 " + realtimeInfo.getPower());
-                textView_aqi.setText("空气" + getAqiLevel(Integer.parseInt(realtimeInfo.getAqi())) + " " + realtimeInfo.getAqi());
+
+//                    textView_aqi.setText("空气" + getAqiLevel(Integer.parseInt(realtimeInfo.getAqi())) + " " + realtimeInfo.getAqi());
                 textView_time.setText(new SimpleDateFormat("YYYY年MM月dd日 E").format(new Date()));
 
-                FutureAdapter myAdapter = new FutureAdapter(MainActivity.this,R.layout.future,futureInfos);
-                ListView_future.setAdapter(myAdapter);
+//                FutureAdapter myAdapter = new FutureAdapter(MainActivity.this,R.layout.future,futureInfos);
+//                ListView_future.setAdapter(myAdapter);
             }
         });
     }
