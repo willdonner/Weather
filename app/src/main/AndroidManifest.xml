@@ -16,12 +16,12 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/FullScree">
-        <activity android:name=".SelectCityActivity"
+        <activity android:name=".Activity.SelectCityActivity"
             android:windowSoftInputMode="stateVisible|adjustResize">
         </activity>
-        <activity android:name=".CityListActivity" />
+        <activity android:name=".Activity.CityListActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".Activity.MainActivity"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

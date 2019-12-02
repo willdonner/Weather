@@ -1,4 +1,4 @@
-package com.dongxun.lichunkai.weather;
+package com.dongxun.lichunkai.weather.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.dongxun.lichunkai.weather.R;
+import com.dongxun.lichunkai.weather.Class.RealtimeInfo;
 
 import java.util.List;
 

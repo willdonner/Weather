@@ -1,4 +1,4 @@
-package com.dongxun.lichunkai.weather;
+package com.dongxun.lichunkai.weather.Adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -8,6 +8,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.dongxun.lichunkai.weather.Class.FutureInfo;
+import com.dongxun.lichunkai.weather.R;
+
 import java.util.List;
 
 public class FutureAdapter extends ArrayAdapter {

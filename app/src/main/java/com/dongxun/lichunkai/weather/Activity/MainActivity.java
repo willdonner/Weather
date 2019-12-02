@@ -1,4 +1,4 @@
-package com.dongxun.lichunkai.weather;
+package com.dongxun.lichunkai.weather.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,7 +19,6 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -30,6 +29,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dongxun.lichunkai.weather.Adapter.FutureAdapter;
+import com.dongxun.lichunkai.weather.Class.FutureInfo;
+import com.dongxun.lichunkai.weather.Class.RealtimeInfo;
+import com.dongxun.lichunkai.weather.R;
 import com.gyf.immersionbar.ImmersionBar;
 
 import org.json.JSONArray;
