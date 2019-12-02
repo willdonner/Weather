@@ -115,13 +115,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
+                //如果获取到了天气数据，停止该线程
+                if (!needGetData){
+                    cancel();
+                }
                 Message message = new Message();
                 message.what = 1;
                 handler.sendMessage(message);
-                //如果获取到了天气数据，停止该线程
-                if (!needGetData){
-                     cancel();
-                }
+
             }
         };
         timer.schedule(timerTask,1000,1000);//延时1s，每隔1秒执行一次run方法
@@ -371,8 +372,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             String responseData = response.body().string();//处理返回的数据
                             try {
                                 JSONObject responses = new JSONObject(responseData);
-                                String error_code = responses.getString("resultcode");
-                                if(error_code.equals("112")){
+                                String error_code = responses.getString("error_code");
+                                if(error_code.equals("10012")){
                                     sendRequestWithOkHttp(city,WeatherApiKey_backup);
                                 }
                             } catch (JSONException e) {
