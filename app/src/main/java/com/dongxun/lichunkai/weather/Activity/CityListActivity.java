@@ -1,16 +1,17 @@
-package com.dongxun.lichunkai.weather;
+package com.dongxun.lichunkai.weather.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
+import com.dongxun.lichunkai.weather.Adapter.CityAdapter;
+import com.dongxun.lichunkai.weather.Class.RealtimeInfo;
+import com.dongxun.lichunkai.weather.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.gyf.immersionbar.ImmersionBar;
 

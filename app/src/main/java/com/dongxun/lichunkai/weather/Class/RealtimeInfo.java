@@ -1,4 +1,4 @@
-package com.dongxun.lichunkai.weather;
+package com.dongxun.lichunkai.weather.Class;
 
 import java.io.Serializable;
 

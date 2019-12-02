@@ -1,4 +1,4 @@
-package com.dongxun.lichunkai.weather;
+package com.dongxun.lichunkai.weather.Adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,6 +7,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.dongxun.lichunkai.weather.Class.HotCity;
+import com.dongxun.lichunkai.weather.R;
+
 import java.util.List;
 
 public class HotCityAdapter extends BaseAdapter {

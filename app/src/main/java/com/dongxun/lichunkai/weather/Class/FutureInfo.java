@@ -1,4 +1,4 @@
-package com.dongxun.lichunkai.weather;
+package com.dongxun.lichunkai.weather.Class;
 
 /**
  * 未来天气信息类

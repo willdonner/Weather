@@ -1,21 +1,19 @@
-package com.dongxun.lichunkai.weather;
+package com.dongxun.lichunkai.weather.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.TextView;
 
+import com.dongxun.lichunkai.weather.Adapter.HotCityAdapter;
+import com.dongxun.lichunkai.weather.Class.HotCity;
+import com.dongxun.lichunkai.weather.R;
 import com.gyf.immersionbar.ImmersionBar;
 
 import java.util.ArrayList;
