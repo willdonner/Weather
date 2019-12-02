@@ -116,16 +116,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void reGetData() {
         Timer timer = new Timer();
+
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
+                if (!needGetData){
+                    cancel();
+                }
                 Message message = new Message();
                 message.what = 1;
                 handler.sendMessage(message);
                 //如果获取到了天气数据，停止该线程
-                if (!needGetData){
-                     cancel();
-                }
             }
         };
         timer.schedule(timerTask,1000,1000);//延时1s，每隔1秒执行一次run方法
@@ -252,9 +253,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //显示信息
         showMessage(1);
         // 发送查询天气请求
+
         sendRequestWithOkHttp(City,WeatherApiKey);
         AirsendRequestWithOkHttp(City,newWeatherApiKey);
         forecastsendRequestWithOkHttp(City,newWeatherApiKey);
+
     }
 
     /**
@@ -515,20 +518,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 JSONArray jsonObjectnow = new JSONArray(daily_forecast);
                 //未来天气信息
 //                JSONArray JSONArray_future = jsonObjectbasic.getJSONObject("result").getJSONArray("future");
-//
+
                 for (int i = 0;i < jsonObjectnow.length();i++) {
                     JSONObject future = jsonObjectnow.getJSONObject(i);
 
                     FutureInfo futureInfo = new FutureInfo();
                     futureInfo.setDate(future.getString("date"));
-//                    futureInfo.setTemperature(future.getString("pop"));
+                    futureInfo.setTemperature(future.getString("tmp_max")+"℃"+"-"+future.getString("tmp_min")+"℃");
                     futureInfo.setWeather(future.getString("cond_txt_n"));
-//                    futureInfo.setWid_day(future.getString("wind_deg"));
+                    futureInfo.setWid_day(future.getString("wind_sc"));
 //                    futureInfo.setWid_night(future.getString("wind_sc"));
 //                    futureInfo.setDirect(future.getString("wind_dir"));
                     futureInfo.setToday(i == 0?true:false);
                     futureInfo.setWeek(getWeek(future.getString("date")));
-//                    futureInfo.setWid_img(1);
+                    futureInfo.setWid_img(getWidImg("01",false));
                     futureInfos.add(futureInfo);
                 }
 
