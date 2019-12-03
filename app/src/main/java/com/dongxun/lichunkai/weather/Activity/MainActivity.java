@@ -56,7 +56,7 @@ import okhttp3.Response;
 
 import static com.dongxun.lichunkai.weather.Utilities.ToolHelper.*;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity {
 
     private String TAG = "MainActivity";
     private LocationManager locationManager;
@@ -77,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView imageView_loading;
     private LinearLayout LinearLayout_message;
     private Boolean needGetData = true;
-    private ImageView imageView_cityList;
     private String WeatherApiKey;
     private String WeatherApiKey_backup;
     private String newWeatherApiKey;
@@ -233,8 +232,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         textView_loading = findViewById(R.id.textView_loading);
         imageView_loading = findViewById(R.id.imageView_loading);
         LinearLayout_message = findViewById(R.id.LinearLayout_message);
-        imageView_cityList = findViewById(R.id.imageView_cityList);
-        imageView_cityList.setOnClickListener(this);
     }
 
     /**
@@ -644,17 +641,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
-  
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.imageView_cityList:
-                Intent intent = new Intent(MainActivity.this,CityListActivity.class);
-                if (!realtimeInfo.getInfo().equals("")) {
-                    intent.putExtra("realtimeInfo",realtimeInfo);
-                }
-                startActivity(intent);
-                break;
-        }
-    }
+
+
 }
