@@ -31,6 +31,7 @@ import com.dongxun.lichunkai.weather.Adapter.FutureAdapter;
 import com.dongxun.lichunkai.weather.Class.FutureInfo;
 import com.dongxun.lichunkai.weather.Class.RealtimeInfo;
 import com.dongxun.lichunkai.weather.R;
+import com.dongxun.lichunkai.weather.Utilities.ToolHelper;
 import com.gyf.immersionbar.ImmersionBar;
 
 import org.json.JSONArray;
@@ -351,10 +352,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void run() {
                 try{
                     OkHttpClient client = new OkHttpClient();//新建一个OKHttp的对象
-                    //聚合请求方式
-//                    Request request = new Request.Builder()
-//                            .url("https://apis.juhe.cn/simpleWeather/query?city="+city+"&key="+apikey+"")
-//                            .build();//创建一个Request对象
                     //和风请求方式
                     Request request = new Request.Builder()
                             .url("https://free-api.heweather.net/s6/weather/now?location="+city+"&key="+newWeatherApiKey+"")
@@ -517,8 +514,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                    futureInfo.setWid_night(future.getString("wind_sc"));
 //                    futureInfo.setDirect(future.getString("wind_dir"));
                     futureInfo.setToday(i == 0?true:false);
-                    futureInfo.setWeek(getWeek(future.getString("date")));
-                    futureInfo.setWid_img(getWidImg(isDay()?future.getString("cond_code_d"):future.getString("cond_code_n"),false));
+                    futureInfo.setWeek(ToolHelper.getWeekByDate(future.getString("date")));
+                    futureInfo.setWid_img(ToolHelper.getWidImg(ToolHelper.isDay()?future.getString("cond_code_d"):future.getString("cond_code_n"),false));
                     futureInfos.add(futureInfo);
                 }
 
@@ -536,9 +533,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
     }
-
-
-
 
     //和风API
     // 解析当前天气的空气质量
@@ -563,7 +557,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        textView_aqi.setText("空气" + getAqiLevel(Integer.parseInt(air_q)) + " " + air_q);
+                        textView_aqi.setText("空气" + ToolHelper.getAqiLevel(Integer.parseInt(air_q)) + " " + air_q);
                     }});
             }else {
                 searchFail("");
@@ -615,59 +609,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
-    //聚合api解析
-//    /**
-//     * 解析JSON
-//     * @param responseData
-//     */
-//    private void parseJSON(String responseData) {
-//        try {
-//            JSONObject response = new JSONObject(responseData);
-//            String error_code = response.getString("error_code");
-//            String reason = response.getString("reason");
-//            if (error_code.equals("0")) {
-//                //城市
-//                String city = response.getJSONObject("result").getString("city");
-//
-//                //当前天气信息
-//                JSONObject realtime = response.getJSONObject("result").getJSONObject("realtime");
-//
-//                realtimeInfo.setAqi(realtime.getString("aqi"));
-//                realtimeInfo.setDirect(realtime.getString("direct"));
-//                realtimeInfo.setHumidity(realtime.getString("humidity"));
-//                realtimeInfo.setInfo(realtime.getString("info"));
-//                realtimeInfo.setPower(realtime.getString("power"));
-//                realtimeInfo.setTemperature(realtime.getString("temperature"));
-//                realtimeInfo.setWid(realtime.getString("wid"));
-//
-//                //未来天气信息
-//                JSONArray JSONArray_future = response.getJSONObject("result").getJSONArray("future");
-//
-//                for (int i = 0;i < JSONArray_future.length();i++) {
-//                    JSONObject future = JSONArray_future.getJSONObject(i);
-//
-//                    FutureInfo futureInfo = new FutureInfo();
-//                    futureInfo.setDate(future.getString("date"));
-//                    futureInfo.setTemperature(future.getString("temperature"));
-//                    futureInfo.setWeather(future.getString("weather"));
-//                    futureInfo.setWid_day(future.getJSONObject("wid").getString("day"));
-//                    futureInfo.setWid_night(future.getJSONObject("wid").getString("night"));
-//                    futureInfo.setDirect(future.getString("direct"));
-//                    futureInfo.setToday(i == 0?true:false);
-//                    futureInfo.setWeek(getWeek(future.getString("date")));
-//                    futureInfo.setWid_img(getWidImg(isDay()?future.getJSONObject("wid").getString("day"):future.getJSONObject("wid").getString("night"),false));
-//                    futureInfos.add(futureInfo);
-//                }
-//                searchSuccess(reason,city,realtimeInfo,futureInfos);
-//            }else {
-//                searchFail(reason);
-//            }
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     /**
      * 查询天气失败，更新UI
      */
@@ -698,207 +639,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 textView_info.setText(realtimeInfo.getInfo());
                 imageView_wid.setImageResource(getWidImg(realtimeInfo.getWid(),true));
                 textView_power.setText("风力 " + realtimeInfo.getPower());
-
-//                    textView_aqi.setText("空气" + getAqiLevel(Integer.parseInt(realtimeInfo.getAqi())) + " " + realtimeInfo.getAqi());
                 textView_time.setText(new SimpleDateFormat("YYYY年MM月dd日 E").format(new Date()));
 
-//                FutureAdapter myAdapter = new FutureAdapter(MainActivity.this,R.layout.future,futureInfos);
-//                ListView_future.setAdapter(myAdapter);
             }
         });
-    }
-  
-    /**
-     * 根据当前日期获得是星期几
-     * time=yyyy-MM-dd
-     * @return
-     */
-    public static String getWeek(String time) {
-        String Week = "";
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        Calendar c = Calendar.getInstance();
-        try {
-            c.setTime(format.parse(time));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        int wek=c.get(Calendar.DAY_OF_WEEK);
-        if (wek == 1) {
-            Week += "周天";
-        }
-        if (wek == 2) {
-            Week += "周一";
-        }
-        if (wek == 3) {
-            Week += "周二";
-        }
-        if (wek == 4) {
-            Week += "周三";
-        }
-        if (wek == 5) {
-            Week += "周四";
-        }
-        if (wek == 6) {
-            Week += "周五";
-        }
-        if (wek == 7) {
-            Week += "周六";
-        }
-        return Week;
-    }
-
-    /**
-     * 判断时间是否为白天
-     */
-    public static Boolean isDay() {
-        Date date = new Date();
-        SimpleDateFormat df = new SimpleDateFormat("HH");
-        String str = df.format(date);
-        int a = Integer.parseInt(str);
-        if (a > 18 && a <= 24) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 获取天气对应的图标
-     * @param wid 天气标识
-     * @param isWhite 是否查找白色图标
-     * @return
-     */
-    public static int getWidImg(String wid,Boolean isWhite) {
-        switch (wid){
-            case "100":
-                return R.drawable.icon_100;
-            case "100n":
-                return R.drawable.icon_100n;
-            case "101":
-                return R.drawable.icon_101;
-            case "102":
-                return R.drawable.icon_102;
-            case "103":
-                return R.drawable.icon_103;
-            case "103n":
-                return R.drawable.icon_103n;
-            case "104":
-                return R.drawable.icon_104;
-            case "104n":
-                return R.drawable.icon_104n;
-            case "200":
-                return R.drawable.icon_200;
-            case "201":
-                return R.drawable.icon_201;
-            case "202":
-                return R.drawable.icon_202;
-            case "203":
-                return R.drawable.icon_203;
-            case "204":
-                return R.drawable.icon_204;
-            case "205":
-                return R.drawable.icon_205;
-            case "206":
-                return R.drawable.icon_206;
-            case "207":
-                return R.drawable.icon_207;
-            case "208":
-                return R.drawable.icon_208;
-            case "209":
-                return R.drawable.icon_209;
-            case "210":
-                return R.drawable.icon_210;
-            case "211":
-                return R.drawable.icon_211;
-            case "212":
-                return R.drawable.icon_212;
-            case "213":
-                return R.drawable.icon_213;
-            case "300":
-                return R.drawable.icon_300;
-            case "300n":
-                return R.drawable.icon_300n;
-            case "301":
-                return R.drawable.icon_301;
-            case "301n":
-                return R.drawable.icon_301n;
-            case "302":
-                return R.drawable.icon_302;
-            case "303":
-                return R.drawable.icon_303;
-            case "304":
-                return R.drawable.icon_304;
-            case "305":
-                return R.drawable.icon_305;
-            case "306":
-                return R.drawable.icon_306;
-            case "307":
-                return R.drawable.icon_307;
-            case "309":
-                return R.drawable.icon_309;
-            case "310":
-                return R.drawable.icon_310;
-            case "311":
-                return R.drawable.icon_311;
-            case "312":
-                return R.drawable.icon_312;
-            case "313":
-                return R.drawable.icon_313;
-            case "400":
-                return R.drawable.icon_400;
-            case "401":
-                return R.drawable.icon_401;
-            case "402":
-                return  R.drawable.icon_402;
-            case "403":
-                return  R.drawable.icon_403;
-            case "404":
-                return  R.drawable.icon_404;
-            case "405":
-                return  R.drawable.icon_405;
-            case "406":
-                return  R.drawable.icon_406;
-            case "406n":
-                return  R.drawable.icon_406n;
-            case "407":
-                return  R.drawable.icon_407;
-            case "407n":
-                return  R.drawable.icon_407n;
-            case "500":
-                return  R.drawable.icon_500;
-            case "501":
-                return  R.drawable.icon_501;
-            case "502":
-                return  R.drawable.icon_502;
-            case "503":
-                return  R.drawable.icon_503;
-            case "504":
-                return  R.drawable.icon_504;
-            case "507":
-                return  R.drawable.icon_507;
-            case "508":
-                return  R.drawable.icon_508;
-            case "900":
-                return  R.drawable.icon_900;
-            case "901":
-                return  R.drawable.icon_901;
-            default:
-                return R.drawable.icon_999;
-        }
-    }
-
-    /**
-     * 空气质量级别
-     * @param aqi
-     * @return
-     */
-    private String getAqiLevel(int aqi) {
-        String aqiLevel = "优";
-        if (aqi > 300) aqiLevel = "严重污染";
-        if (aqi < 301) aqiLevel = "中度污染";
-        if (aqi < 201) aqiLevel = "轻度污染";
-        if (aqi < 101) aqiLevel = "良";
-        if (aqi < 51) aqiLevel = "优";
-        return aqiLevel;
     }
   
     @Override
