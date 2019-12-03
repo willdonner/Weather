@@ -109,14 +109,14 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * 显示信息
-     * @param state 0：正在定位，1：正在更新，2：更新成功，3：更新失败，4：网络不可用
+     * @param type 0：正在定位，1：正在更新，2：更新成功，3：更新失败，4：网络不可用
      */
-    private void showMessage(final int state) {
+    private void showMessage(final int type) {
         //一秒钟显示信息(数据获取成功则显示2秒，失败则一直显示)
         CountDownTimer countDownTimer = new CountDownTimer(1*1000, 2000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                switch (state){
+                switch (type){
                     case 0:
                         imageView_loading.setImageResource(R.drawable.logo_location);
                         textView_loading.setText("正在定位");
@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public void onFinish() {
-                switch (state){
+                switch (type){
                     case 2:
                         LinearLayout_message.setVisibility(View.GONE);
                         break;
