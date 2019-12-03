@@ -13,8 +13,6 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -39,10 +37,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -54,6 +50,8 @@ import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import static com.dongxun.lichunkai.weather.Utilities.ToolHelper.*;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -79,8 +77,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView imageView_cityList;
     private String WeatherApiKey;
     private String WeatherApiKey_backup;
-
-    private String newWeatherApiKey;;
+    private String newWeatherApiKey;
     private RealtimeInfo realtimeInfo = new RealtimeInfo();
 
     Handler handler = new Handler() {
@@ -123,13 +120,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
+                //如果获取到了天气数据，停止该线程
                 if (!needGetData){
                     cancel();
                 }
                 Message message = new Message();
                 message.what = 1;
                 handler.sendMessage(message);
-                //如果获取到了天气数据，停止该线程
             }
         };
         timer.schedule(timerTask,1000,1000);//延时1s，每隔1秒执行一次run方法
@@ -276,20 +273,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    /**
-     * 检查当前网络是否可用
-     * @return
-     */
-    public boolean isNetworkConnected(Context context) {
-        if (context != null) {
-            ConnectivityManager mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
-            if (mNetworkInfo != null) {
-                return mNetworkInfo.isAvailable();
-            }
-        }
-        return false;
-    }
+
 
     /**
      * 定位
@@ -388,8 +372,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             String responseData = response.body().string();//处理返回的数据
                             try {
                                 JSONObject responses = new JSONObject(responseData);
-                                String error_code = responses.getString("resultcode");
-                                if(error_code.equals("112")){
+                                String error_code = responses.getString("error_code");
+                                if(error_code.equals("10012")){
                                     sendRequestWithOkHttp(city,WeatherApiKey_backup);
                                 }
                             } catch (JSONException e) {
@@ -721,7 +705,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
-
+  
     /**
      * 根据当前日期获得是星期几
      * time=yyyy-MM-dd
@@ -914,7 +898,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (aqi < 51) aqiLevel = "优";
         return aqiLevel;
     }
-
+  
     @Override
     public void onClick(View view) {
         switch (view.getId()){
