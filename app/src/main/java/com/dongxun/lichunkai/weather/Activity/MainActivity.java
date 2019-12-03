@@ -99,13 +99,7 @@ public class MainActivity extends AppCompatActivity {
         getPermission();
     }
 
-    /**
-     * 最小化app
-     */
-    @Override
-    public void onBackPressed() {
-        moveTaskToBack(true);
-    }
+
 
     /**
      * 显示信息
@@ -381,10 +375,8 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
-    //和风API
-    // 解析当前天气未来天气
     /**
-     * 解析JSON
+     * 解析当前天气未来天气JSON（和风API）
      * @param responseData
      */
     private void forecastparseJSON(String responseData) {
@@ -432,10 +424,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //和风API
-    // 解析当前天气的空气质量
     /**
-     * 解析JSON
+     * 解析当前天气的空气质量JSON（和风API）
      * @param responseData
      */
     private void AirparseJSON(String responseData) {
@@ -465,10 +455,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //和风API
-    // 解析当前天气
     /**
-     * 解析JSON
+     * 解析JSON（和风API）
      * @param responseData
      */
     private void parseJSON(String responseData) {
@@ -543,5 +531,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * 返回最小化app
+     */
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);
+    }
 
 }
