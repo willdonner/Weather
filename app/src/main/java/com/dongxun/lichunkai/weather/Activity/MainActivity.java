@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private String TAG = "MainActivity";
     private LocationManager locationManager;
     private LocationListener locationListener;
-    private String City = "昆明";//查询城市
+    private String City = "昆明";
     private ImageView imageView_back;
     private TextView textView_city;
     private TextView textView_temperature;
@@ -76,24 +76,11 @@ public class MainActivity extends AppCompatActivity {
     private TextView textView_loading;
     private ImageView imageView_loading;
     private LinearLayout LinearLayout_message;
-    private Boolean needGetData = true;
     private String WeatherApiKey;
     private String WeatherApiKey_backup;
     private String newWeatherApiKey;
     private RealtimeInfo realtimeInfo = new RealtimeInfo();
 
-    Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            if (msg.what == 1){
-                //do something
-                if(needGetData && isNetworkConnected(MainActivity.this)){
-                    location();
-                }
-            }
-            super.handleMessage(msg);
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,28 +97,6 @@ public class MainActivity extends AppCompatActivity {
         initView();
         setBack();
         getPermission();
-//        reGetData();
-    }
-
-    /**
-     * 每隔一秒请求一次天气数据
-     */
-    private void reGetData() {
-        Timer timer = new Timer();
-
-        TimerTask timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                //如果获取到了天气数据，停止该线程
-                if (!needGetData){
-                    cancel();
-                }
-                Message message = new Message();
-                message.what = 1;
-                handler.sendMessage(message);
-            }
-        };
-        timer.schedule(timerTask,1000,1000);//延时1s，每隔1秒执行一次run方法
     }
 
     /**
@@ -239,21 +204,9 @@ public class MainActivity extends AppCompatActivity {
      */
     private void getDataByCity() {
         //显示信息
-        showMessage(0);
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED) {
-            return;
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
-            return;
-        }
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-        locationManager.removeUpdates(locationListener);
-
-        //显示信息
         showMessage(1);
-        // 发送查询天气请求
 
+        // 发送查询天气请求
         sendRequestWithOkHttp(City,WeatherApiKey);
         AirsendRequestWithOkHttp(City,newWeatherApiKey);
         forecastsendRequestWithOkHttp(City,newWeatherApiKey);
@@ -268,55 +221,8 @@ public class MainActivity extends AppCompatActivity {
             //开启定位权限,200是标识码
             ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},200);
         }else{
-            location();//开始定位
-//           Toast.makeText(MainActivity.this,"已开启定位权限",Toast.LENGTH_LONG).show();
+            getDataByCity();//定位后根据城市查询天气
         }
-    }
-
-
-
-    /**
-     * 定位
-     */
-    public void location(){
-        if (!isNetworkConnected(this)) {
-            showMessage(4);
-            return;
-        }
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                Geocoder gc = new Geocoder(MainActivity.this, Locale.getDefault());
-                List<Address> locationList = null;
-                try {
-                    locationList = gc.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                Address address = locationList.get(0);//得到Address实例
-
-                if (address == null) {
-                    return;
-                }
-//                String countryName = address.getCountryName();//得到国家名称
-//                String adminArea = address.getAdminArea();//省
-                String locality = address.getLocality();//得到城市名称
-                City = locality.replace("市","");
-                String featureName = address.getFeatureName();//得到周边信息
-
-            }
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-            }
-            @Override
-            public void onProviderEnabled(String provider) {
-            }
-            @Override
-            public void onProviderDisabled(String provider) {
-            }
-        };
-        getDataByCity();//定位后根据城市查询天气
     }
 
     /**
@@ -331,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode){
             case 200://刚才的识别码
                 if(grantResults[0] == PackageManager.PERMISSION_GRANTED){//用户同意权限,执行我们的操作
-                    location();//开始定位
+                    getDataByCity();
                 }else{//用户拒绝之后,当然我们也可以弹出一个窗口,直接跳转到系统设置页面
                     Toast.makeText(MainActivity.this,"未开启定位权限,请手动到设置去开启权限",Toast.LENGTH_LONG).show();
                 }
@@ -364,7 +270,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
-                            needGetData = false;
                             String responseData = response.body().string();//处理返回的数据
                             try {
                                 JSONObject responses = new JSONObject(responseData);
@@ -417,7 +322,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
-                            needGetData = false;
                             String responseData = response.body().string();//处理返回的数据
                             try {
                                 JSONObject responses = new JSONObject(responseData);
@@ -461,7 +365,6 @@ public class MainActivity extends AppCompatActivity {
                         }
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
-                            needGetData = false;
                             String responseData = response.body().string();//处理返回的数据
                             try {
                                 JSONObject responses = new JSONObject(responseData);
