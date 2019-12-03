@@ -11,7 +11,16 @@ import androidx.core.content.ContextCompat;
  * 权限处理
  */
 public class PermissionUtil {
+
     private static PermissionUtil mInstance;
+    
+    public static final int REQUEST_PERMISSION_CAMERA = 501;//相机权限申请
+    public static final int REQUEST_PERMISSION_SD = 502;//SD卡权限申请
+    public static final int REQUEST_PERMISSION_AUDIO = 503;//录音权限申请
+    public static final int REQUEST_PERMISSION_LOCATION = 504;//定位权限申请
+    public static final int REQUEST_PERMISSION_FILESYSTEMS = 505;//挂载SD卡权限申请
+    public static final int REQUEST_PERMISSION_CONTACTS = 506;//获取读取手机通讯录
+    public static final int REQUEST_PERMISSION_CALL = 507;//获取拨打电话权限
 
     private PermissionUtil() {
     }
@@ -47,15 +56,7 @@ public class PermissionUtil {
         return isHasPermission;
     }
 
-    /*关于权限申请*/
-    public static final int REQUEST_PERMISSION_CAMERA = 501;//相机权限申请
-    public static final int REQUEST_PERMISSION_SD = 502;//SD卡权限申请
-    public static final int REQUEST_PERMISSION_AUDIO = 503;//录音权限申请
-    public static final int REQUEST_PERMISSION_LOCATION = 504;//定位权限申请
-    public static final int REQUEST_PERMISSION_FILESYSTEMS = 505;//挂载SD卡权限申请
-    public static final int REQUEST_PERMISSION_CONTACTS = 506;//获取读取手机通讯录
-    //获取拨打电话权限
-    public static final int REQUEST_PERMISSION_CALL = 507;
+
 
     /**
      * 相机权限申请
