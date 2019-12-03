@@ -47,7 +47,7 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/info_00" />
+                app:srcCompat="@drawable/icon_100" />
 
             <TextView
                 android:id="@+id/textView_weather"

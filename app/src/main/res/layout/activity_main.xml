@@ -61,7 +61,7 @@
                     android:id="@+id/imageView_wid"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
-                    app:srcCompat="@drawable/wid_00" />
+                    app:srcCompat="@drawable/icon_100" />
 
                 <TextView
                     android:layout_width="1dp"
