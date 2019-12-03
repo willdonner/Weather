@@ -35,12 +35,12 @@ public class FutureAdapter extends ArrayAdapter {
             convertView = LayoutInflater.from(getContext()).inflate(resourceId, null);
             viewHolder = new ViewHolder();
             // 通过id得到图片控件实例
-            viewHolder.imageView_wid = convertView.findViewById(R.id.imageView_wid1);
+            viewHolder.imageView_wid = convertView.findViewById(R.id.future_imageView_wid);
             // 通过id得到文本空间实例
             viewHolder.textView_week = (TextView) convertView.findViewById(R.id.textView_week);
             viewHolder.textView_date = (TextView) convertView.findViewById(R.id.textView_date);
             viewHolder.textView_weather = (TextView) convertView.findViewById(R.id.textView_weather);
-            viewHolder.textView_temperature = (TextView) convertView.findViewById(R.id.textView_temperature);
+            viewHolder.textView_temperature = (TextView) convertView.findViewById(R.id.future_textView_temperature);
             // 缓存图片控件和文本控件的实例
             convertView.setTag(viewHolder);
         }
@@ -56,7 +56,7 @@ public class FutureAdapter extends ArrayAdapter {
         viewHolder.textView_week.setText(futureInfo.getToday()?"今天":futureInfo.getWeek());
         viewHolder.textView_date.setText(futureInfo.getDate().split("-")[1] + "/" +futureInfo.getDate().split("-")[2]);
         viewHolder.textView_weather.setText(futureInfo.getWeather());
-//        viewHolder.textView_temperature.setText(futureInfo.getTemperature());
+        viewHolder.textView_temperature.setText(futureInfo.getTemperature());
 
 //        View view = LayoutInflater.from(getContext()).inflate(R.layout.future, null);
 //
