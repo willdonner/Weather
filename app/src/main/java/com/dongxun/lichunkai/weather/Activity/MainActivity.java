@@ -205,12 +205,10 @@ public class MainActivity extends AppCompatActivity {
     private void getDataByCity() {
         //显示信息
         showMessage(1);
-
         // 发送查询天气请求
         sendRequestWithOkHttp(City,WeatherApiKey);
         AirsendRequestWithOkHttp(City,newWeatherApiKey);
         forecastsendRequestWithOkHttp(City,newWeatherApiKey);
-
     }
 
     /**
