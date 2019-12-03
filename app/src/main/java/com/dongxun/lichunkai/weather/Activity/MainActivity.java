@@ -31,6 +31,7 @@ import com.dongxun.lichunkai.weather.Adapter.FutureAdapter;
 import com.dongxun.lichunkai.weather.Class.FutureInfo;
 import com.dongxun.lichunkai.weather.Class.RealtimeInfo;
 import com.dongxun.lichunkai.weather.R;
+import com.dongxun.lichunkai.weather.Utilities.PermissionUtil;
 import com.dongxun.lichunkai.weather.Utilities.ToolHelper;
 import com.gyf.immersionbar.ImmersionBar;
 
@@ -209,11 +210,8 @@ public class MainActivity extends AppCompatActivity {
      * 获取权限
      */
     private void getPermission() {
-        if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){//未开启定位权限
-            //开启定位权限,200是标识码
-            ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},200);
-        }else{
-            getDataByCity();//定位后根据城市查询天气
+        if (PermissionUtil.getInstance().requestLocation(this)) {
+            getDataByCity();
         }
     }
 
@@ -227,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode){
-            case 200://刚才的识别码
+            case 504://刚才的识别码
                 if(grantResults[0] == PackageManager.PERMISSION_GRANTED){//用户同意权限,执行我们的操作
                     getDataByCity();
                 }else{//用户拒绝之后,当然我们也可以弹出一个窗口,直接跳转到系统设置页面
