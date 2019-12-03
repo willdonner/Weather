@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
         setBack();
         getPermission();
-        reGetData();
+//        reGetData();
     }
 
     /**
@@ -520,14 +520,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //当前空气质量信息
                 JSONArray jsonObjectnow = new JSONArray(daily_forecast);
                 //未来天气信息
-//                JSONArray JSONArray_future = jsonObjectbasic.getJSONObject("result").getJSONArray("future");
-
                 for (int i = 0;i < jsonObjectnow.length();i++) {
                     JSONObject future = jsonObjectnow.getJSONObject(i);
 
                     FutureInfo futureInfo = new FutureInfo();
                     futureInfo.setDate(future.getString("date"));
-                    futureInfo.setTemperature(future.getString("tmp_max")+"℃"+"-"+future.getString("tmp_min")+"℃");
+                    futureInfo.setTemperature(future.getString("tmp_max")+"℃"+"/"+future.getString("tmp_min")+"℃");
                     futureInfo.setWeather(future.getString("cond_txt_n"));
                     futureInfo.setWid_day(future.getString("wind_sc"));
 //                    futureInfo.setWid_night(future.getString("wind_sc"));
@@ -614,9 +612,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 //当前天气信息
                 JSONObject jsonObjectnow = new JSONObject(now);
-//                JSONObject realtime = response.getJSONObject("result").getJSONObject("realtime");
-//
-//                realtimeInfo.setAqi(jsonObjectnow.optString("wind_deg"));
                 realtimeInfo.setDirect(jsonObjectnow.optString("wind_dir"));
                 realtimeInfo.setHumidity(jsonObjectnow.optString("hum"));
                 realtimeInfo.setInfo(jsonObjectnow.optString("cond_txt"));
@@ -624,23 +619,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 realtimeInfo.setTemperature(jsonObjectnow.getString("tmp"));
                 realtimeInfo.setWid(jsonObjectnow.getString("cond_code"));
 
-                //未来天气信息
-//                JSONArray JSONArray_future = jsonObjectbasic.getJSONObject("result").getJSONArray("future");
-//
-//                for (int i = 0;i < JSONArray_future.length();i++) {
-//                    JSONObject future = JSONArray_future.getJSONObject(i);
-//
-//                    FutureInfo futureInfo = new FutureInfo();
-//                    futureInfo.setDate(future.getString("date"));
-//                    futureInfo.setTemperature(future.getString("temperature"));
-//                    futureInfo.setWeather(future.getString("weather"));
-//                    futureInfo.setWid_day(future.getJSONObject("wid").getString("day"));
-//                    futureInfo.setWid_night(future.getJSONObject("wid").getString("night"));
-//                    futureInfo.setDirect(future.getString("direct"));
-//                    futureInfo.setToday(i == 0?true:false);
-//                    futureInfo.setWeek(getWeek(future.getString("date")));
-//                    futureInfo.setWid_img(getWidImg(isDay()?future.getJSONObject("wid").getString("day"):future.getJSONObject("wid").getString("night"),false));
-//                    futureInfos.add(futureInfo);
 //                }
                 searchSuccess("",city,realtimeInfo);
             }else {
