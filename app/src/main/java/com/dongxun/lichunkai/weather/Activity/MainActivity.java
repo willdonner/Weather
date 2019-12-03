@@ -532,7 +532,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                    futureInfo.setDirect(future.getString("wind_dir"));
                     futureInfo.setToday(i == 0?true:false);
                     futureInfo.setWeek(getWeek(future.getString("date")));
-                    futureInfo.setWid_img(getWidImg("01",false));
+                    futureInfo.setWid_img(getWidImg(isDay()?future.getString("cond_code_d"):future.getString("cond_code_n"),false));
                     futureInfos.add(futureInfo);
                 }
 
@@ -783,40 +783,120 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     public static int getWidImg(String wid,Boolean isWhite) {
         switch (wid){
-            case "00": return isWhite?R.drawable.wid_00:R.drawable.info_00;
-            case "01": return isWhite?R.drawable.wid_01:R.drawable.info_01;
-            case "02": return isWhite?R.drawable.wid_02:R.drawable.info_02;
-            case "03": return isWhite?R.drawable.wid_03:R.drawable.info_03;
-            case "04": return isWhite?R.drawable.wid_04:R.drawable.info_04;
-            case "05": return isWhite?R.drawable.wid_05:R.drawable.info_05;
-            case "06": return isWhite?R.drawable.wid_06:R.drawable.info_06;
-            case "07": return isWhite?R.drawable.wid_07:R.drawable.info_07;
-            case "08": return isWhite?R.drawable.wid_08:R.drawable.info_08;
-            case "09": return isWhite?R.drawable.wid_09:R.drawable.info_09;
-            case "10": return isWhite?R.drawable.wid_10:R.drawable.info_10;
-            case "11": return isWhite?R.drawable.wid_11:R.drawable.info_11;
-            case "12": return isWhite?R.drawable.wid_12:R.drawable.info_12;
-            case "13": return isWhite?R.drawable.wid_13:R.drawable.info_13;
-            case "14": return isWhite?R.drawable.wid_14:R.drawable.info_14;
-            case "15": return isWhite?R.drawable.wid_15:R.drawable.info_15;
-            case "16": return isWhite?R.drawable.wid_16:R.drawable.info_16;
-            case "17": return isWhite?R.drawable.wid_17:R.drawable.info_17;
-            case "18": return isWhite?R.drawable.wid_18:R.drawable.info_18;
-            case "19": return isWhite?R.drawable.wid_19:R.drawable.info_19;
-            case "20": return isWhite?R.drawable.wid_20:R.drawable.info_20;
-            case "21": return isWhite?R.drawable.wid_21:R.drawable.info_21;
-            case "22": return isWhite?R.drawable.wid_22:R.drawable.info_22;
-            case "23": return isWhite?R.drawable.wid_23:R.drawable.info_23;
-            case "24": return isWhite?R.drawable.wid_24:R.drawable.info_24;
-            case "25": return isWhite?R.drawable.wid_25:R.drawable.info_25;
-            case "26": return isWhite?R.drawable.wid_26:R.drawable.info_26;
-            case "27": return isWhite?R.drawable.wid_27:R.drawable.info_27;
-            case "28": return isWhite?R.drawable.wid_28:R.drawable.info_28;
-            case "29": return isWhite?R.drawable.wid_29:R.drawable.info_29;
-            case "30": return isWhite?R.drawable.wid_30:R.drawable.info_30;
-            case "31": return isWhite?R.drawable.wid_31:R.drawable.info_31;
-            case "53": return isWhite?R.drawable.wid_53:R.drawable.info_53;
-            default: return isWhite?R.drawable.wid_00:R.drawable.info_00;
+            case "100":
+                return R.drawable.icon_100;
+            case "100n":
+                return R.drawable.icon_100n;
+            case "101":
+                return R.drawable.icon_101;
+            case "102":
+                return R.drawable.icon_102;
+            case "103":
+                return R.drawable.icon_103;
+            case "103n":
+                return R.drawable.icon_103n;
+            case "104":
+                return R.drawable.icon_104;
+            case "104n":
+                return R.drawable.icon_104n;
+            case "200":
+                return R.drawable.icon_200;
+            case "201":
+                return R.drawable.icon_201;
+            case "202":
+                return R.drawable.icon_202;
+            case "203":
+                return R.drawable.icon_203;
+            case "204":
+                return R.drawable.icon_204;
+            case "205":
+                return R.drawable.icon_205;
+            case "206":
+                return R.drawable.icon_206;
+            case "207":
+                return R.drawable.icon_207;
+            case "208":
+                return R.drawable.icon_208;
+            case "209":
+                return R.drawable.icon_209;
+            case "210":
+                return R.drawable.icon_210;
+            case "211":
+                return R.drawable.icon_211;
+            case "212":
+                return R.drawable.icon_212;
+            case "213":
+                return R.drawable.icon_213;
+            case "300":
+                return R.drawable.icon_300;
+            case "300n":
+                return R.drawable.icon_300n;
+            case "301":
+                return R.drawable.icon_301;
+            case "301n":
+                return R.drawable.icon_301n;
+            case "302":
+                return R.drawable.icon_302;
+            case "303":
+                return R.drawable.icon_303;
+            case "304":
+                return R.drawable.icon_304;
+            case "305":
+                return R.drawable.icon_305;
+            case "306":
+                return R.drawable.icon_306;
+            case "307":
+                return R.drawable.icon_307;
+            case "309":
+                return R.drawable.icon_309;
+            case "310":
+                return R.drawable.icon_310;
+            case "311":
+                return R.drawable.icon_311;
+            case "312":
+                return R.drawable.icon_312;
+            case "313":
+                return R.drawable.icon_313;
+            case "400":
+                return R.drawable.icon_400;
+            case "401":
+                return R.drawable.icon_401;
+            case "402":
+                return  R.drawable.icon_402;
+            case "403":
+                return  R.drawable.icon_403;
+            case "404":
+                return  R.drawable.icon_404;
+            case "405":
+                return  R.drawable.icon_405;
+            case "406":
+                return  R.drawable.icon_406;
+            case "406n":
+                return  R.drawable.icon_406n;
+            case "407":
+                return  R.drawable.icon_407;
+            case "407n":
+                return  R.drawable.icon_407n;
+            case "500":
+                return  R.drawable.icon_500;
+            case "501":
+                return  R.drawable.icon_501;
+            case "502":
+                return  R.drawable.icon_502;
+            case "503":
+                return  R.drawable.icon_503;
+            case "504":
+                return  R.drawable.icon_504;
+            case "507":
+                return  R.drawable.icon_507;
+            case "508":
+                return  R.drawable.icon_508;
+            case "900":
+                return  R.drawable.icon_900;
+            case "901":
+                return  R.drawable.icon_901;
+            default:
+                return R.drawable.icon_999;
         }
     }
 
