@@ -2,6 +2,9 @@ package com.dongxun.lichunkai.weather.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
+import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.LocationListener;
@@ -192,7 +195,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return R.drawable.back_spring;
     }
-
 
     /**
      * 初始化组件
