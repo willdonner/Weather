@@ -16,6 +16,7 @@
         android:roundIcon="@drawable/logo"
         android:supportsRtl="true"
         android:theme="@style/FullScree">
+        <activity android:name=".Activity.CityActivity"></activity>
         <activity
             android:name=".Activity.MainActivity"
             android:screenOrientation="portrait">
