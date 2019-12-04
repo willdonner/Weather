@@ -42,6 +42,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
     private ListView ListView_hotCity;
     private ImageView imageView_logo;
     private TextView textView_title;
+    private ImageView imageView_noData;
 
 
     private String currentCity = "";
@@ -62,7 +63,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
      * 搜索城市
      */
     private String[] searchCity() {
-        final String[] searchData = {"","","","","","","","","","","","","","","","","","","",""};//默认十条数据
+        final String[] searchData = {"","","","","","","","","","","","","","","","","","","",""};//默认二十条数据
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -89,6 +90,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
                                 JSONArray arr = new JSONArray(newresponse);
                                 JSONObject temp = (JSONObject) arr.get(0);
                                 String status = temp.getString("status");
+                                Log.w("TAG", "onResponse: " + status);
                                 if (status.equals("ok")) {
                                     JSONArray object = temp.getJSONArray("basic");
                                     for (int i =0;i < object.length();i++){
@@ -99,10 +101,20 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
+                                            imageView_noData.setVisibility(View.GONE);
+                                            ListView_hotCity.setVisibility(View.VISIBLE);
                                             setHotAdapter(searchData);
                                         }
                                     });
 
+                                }else if(status.equals("unknown location")) {
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            imageView_noData.setVisibility(View.VISIBLE);
+                                            ListView_hotCity.setVisibility(View.GONE);
+                                        }
+                                    });
                                 }else {
 
                                 }
@@ -220,6 +232,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
         ListView_hotCity = findViewById(R.id.ListView_hotCity);
         imageView_logo = findViewById(R.id.imageView_logo);
         textView_title = findViewById(R.id.textView_title);
+        imageView_noData = findViewById(R.id.imageView_noData);
     }
 
     /**
@@ -254,6 +267,8 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
             imageView_logo.setImageResource(R.drawable.logo_search);
             textView_title.setText("搜索结果");
         }else {
+            imageView_noData.setVisibility(View.GONE);
+            ListView_hotCity.setVisibility(View.VISIBLE);
             setHotAdapter(hotCitys);
             imageView_logo.setImageResource(R.drawable.logo_hotcity);
             textView_title.setText("热门城市");
