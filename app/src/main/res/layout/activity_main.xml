@@ -111,7 +111,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
-                    android:text="晴"
+                    android:text=""
                     android:textColor="#ffff"
                     android:textSize="20sp" />
             </LinearLayout>
@@ -122,9 +122,28 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:gravity="center"
-                android:text="2019年11月21日 周一"
+                android:text=""
                 android:textColor="#ffff"
                 android:textSize="16sp" />
+
+                <com.jinrishici.sdk.android.view.JinrishiciTextView
+                    android:id="@+id/jinrisiciTextView"
+                    android:layout_width="1dp"
+                    android:layout_height="1dp"
+                    android:textColor="#ffff"
+                    android:textSize="1sp"
+                    android:gravity="center"
+                    app:jrsc_refresh_on_click="true"
+                    />
+                <TextView
+                    android:id="@+id/realjinrisiciTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text=""
+                    android:textColor="#ffff"
+                    android:textSize="16sp"
+                    />
 
         </LinearLayout>
 
@@ -159,7 +178,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="空气 优 20" />
+                        android:text="空气" />
 
                 </LinearLayout>
 
@@ -181,7 +200,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="湿度 63" />
+                        android:text="湿度" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -202,7 +221,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="风力 2级" />
+                        android:text="风力" />
                 </LinearLayout>
             </LinearLayout>
 
