@@ -8,6 +8,14 @@
     tools:context=".Activity.MainActivity">
 
 
+    <com.scwang.smart.refresh.layout.SmartRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/refreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:srlAccentColor="@android:color/white">
+        <com.scwang.smart.refresh.header.ClassicsHeader
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -117,15 +125,6 @@
                 android:textColor="#ffff"
                 android:textSize="16sp" />
 
-                <com.jinrishici.sdk.android.view.JinrishiciTextView
-                    android:id="@+id/jinrisiciTextView"
-                    android:layout_width="1dp"
-                    android:layout_height="1dp"
-                    android:textColor="#ffff"
-                    android:textSize="1sp"
-                    android:gravity="center"
-                    app:jrsc_refresh_on_click="true"
-                    />
                 <TextView
                     android:id="@+id/realjinrisiciTextView"
                     android:layout_width="match_parent"
@@ -225,4 +224,8 @@
         </LinearLayout>
 
     </RelativeLayout>
+        <com.scwang.smart.refresh.footer.ClassicsFooter
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </com.scwang.smart.refresh.layout.SmartRefreshLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
