@@ -8,15 +8,10 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
-import android.os.Message;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -34,6 +29,8 @@ import com.dongxun.lichunkai.weather.R;
 import com.dongxun.lichunkai.weather.Utilities.PermissionUtil;
 import com.dongxun.lichunkai.weather.Utilities.ToolHelper;
 import com.gyf.immersionbar.ImmersionBar;
+import com.jinrishici.sdk.android.model.PoetySentence;
+import com.jinrishici.sdk.android.view.JinrishiciTextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -74,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<FutureInfo> futureInfos = new ArrayList<>();
     private ListView ListView_future;
     private TextView textView_time;
+    private TextView realjinrisiciTextView;
     private TextView textView_loading;
     private ImageView imageView_loading;
     private LinearLayout LinearLayout_message;
@@ -81,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
     private String WeatherApiKey_backup;
     private String newWeatherApiKey;
     private RealtimeInfo realtimeInfo = new RealtimeInfo();
+    private String jrsctext;
 
 
     @Override
@@ -93,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
         //和风天气api
         newWeatherApiKey = getResources().getString(R.string.newapikey);
-
+        jrsc();
         ImmersionBar.with(this).init();
         initView();
         setBack();
@@ -192,6 +191,7 @@ public class MainActivity extends AppCompatActivity {
         textView_loading = findViewById(R.id.textView_loading);
         imageView_loading = findViewById(R.id.imageView_loading);
         LinearLayout_message = findViewById(R.id.LinearLayout_message);
+        realjinrisiciTextView = findViewById(R.id.realjinrisiciTextView);
     }
 
     /**
@@ -204,6 +204,19 @@ public class MainActivity extends AppCompatActivity {
         sendRequestWithOkHttp(City,WeatherApiKey);
         AirsendRequestWithOkHttp(City,newWeatherApiKey);
         forecastsendRequestWithOkHttp(City,newWeatherApiKey);
+    }
+
+    private void jrsc(){
+        final JinrishiciTextView jinrishiciTextView = findViewById(R.id.jinrisiciTextView);
+        jinrishiciTextView.setDataFormat(new JinrishiciTextView.DataFormatListener() {
+            @Override
+            public String set(PoetySentence poetySentence) {
+                //TODO return String by yourself
+                jrsctext = poetySentence.getData().getContent();
+                realjinrisiciTextView.setText(jrsctext);
+                return "";
+            }
+        });
     }
 
     /**
@@ -391,7 +404,7 @@ public class MainActivity extends AppCompatActivity {
                 //当前空气质量信息
                 JSONArray jsonObjectnow = new JSONArray(daily_forecast);
                 //未来天气信息
-                for (int i = 0;i < jsonObjectnow.length();i++) {
+                for (int i = 0;i < 5;i++) {
                     JSONObject future = jsonObjectnow.getJSONObject(i);
 
                     FutureInfo futureInfo = new FutureInfo();

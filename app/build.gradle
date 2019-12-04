@@ -5,7 +5,7 @@ android {
     buildToolsVersion "29.0.1"
     defaultConfig {
         applicationId "com.dongxun.lichunkai.weather"
-        minSdkVersion 15
+        minSdkVersion 18
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -36,4 +36,6 @@ dependencies {
     //noinspection GradleCompatible
     implementation 'com.android.support:recyclerview-v7:27.1.0'
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
+    //今日诗词
+    implementation 'com.jinrishici:android-sdk:1.2'
 }
