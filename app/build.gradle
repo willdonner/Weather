@@ -37,5 +37,14 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.1.0'
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
     //今日诗词
-    implementation 'com.jinrishici:android-sdk:1.2'
+    implementation 'com.jinrishici:android-sdk:1.4'
+    //下拉刷新
+    implementation  'com.scwang.smart:refresh-layout-kernel:2.0.0-alpha-1'      //核心必须依赖
+    implementation  'com.scwang.smart:refresh-header-classics:2.0.0-alpha-1'    //经典刷新头
+    implementation  'com.scwang.smart:refresh-header-radar:2.0.0-alpha-1'       //雷达刷新头
+    implementation  'com.scwang.smart:refresh-header-falsify:2.0.0-alpha-1'     //虚拟刷新头
+    implementation  'com.scwang.smart:refresh-header-material:2.0.0-alpha-1'    //谷歌刷新头
+    implementation  'com.scwang.smart:refresh-header-two-level:2.0.0-alpha-1'   //二级刷新头
+    implementation  'com.scwang.smart:refresh-footer-ball:2.0.0-alpha-1'        //球脉冲加载
+    implementation  'com.scwang.smart:refresh-footer-classics:2.0.0-alpha-1'    //经典加载
 }

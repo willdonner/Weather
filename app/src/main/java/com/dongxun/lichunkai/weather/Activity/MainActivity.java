@@ -2,11 +2,10 @@ package com.dongxun.lichunkai.weather.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -14,6 +13,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -31,22 +31,25 @@ import com.dongxun.lichunkai.weather.R;
 import com.dongxun.lichunkai.weather.Utilities.PermissionUtil;
 import com.dongxun.lichunkai.weather.Utilities.ToolHelper;
 import com.gyf.immersionbar.ImmersionBar;
+import com.jinrishici.sdk.android.JinrishiciClient;
+import com.jinrishici.sdk.android.factory.JinrishiciFactory;
+import com.jinrishici.sdk.android.listener.JinrishiciCallback;
+import com.jinrishici.sdk.android.model.JinrishiciRuntimeException;
 import com.jinrishici.sdk.android.model.PoetySentence;
-import com.jinrishici.sdk.android.view.JinrishiciTextView;
+import com.scwang.smart.refresh.footer.BallPulseFooter;
+import com.scwang.smart.refresh.footer.ClassicsFooter;
+import com.scwang.smart.refresh.layout.api.RefreshLayout;
+import com.scwang.smart.refresh.layout.constant.SpinnerStyle;
+import com.scwang.smart.refresh.layout.listener.OnLoadMoreListener;
+import com.scwang.smart.refresh.layout.listener.OnRefreshListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -84,7 +87,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView imageView_location;
     private String jrsctext;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,7 +97,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //和风天气api
         newWeatherApiKey = getResources().getString(R.string.newapikey);
-        jrsc();
+        JinrishiciFactory.init(this);
+        jrscapi();
         ImmersionBar.with(this).init();
         initView();
         setBack();
@@ -147,6 +150,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }.start();
     }
 
+    private void jrscapi(){
+        //异步方法
+        JinrishiciClient client = JinrishiciClient.getInstance();
+        client.getOneSentenceBackground(new JinrishiciCallback() {
+            @Override
+            public void done(PoetySentence poetySentence) {
+                //TODO do something
+                //在这里进行你的逻辑处理
+                realjinrisiciTextView.setText(poetySentence.getData().getContent());
+            }
+
+            @Override
+            public void error(JinrishiciRuntimeException e) {
+                Log.w(TAG, "error: code = " + e.getCode() + " message = " + e.getMessage());
+                //TODO do something else
+            }
+        });
+    }
+
     /**
      * 设置背景图片和位置
      */
@@ -176,7 +198,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return R.drawable.back_spring;
     }
 
-
     /**
      * 初始化组件
      */
@@ -197,6 +218,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         imageView_location = findViewById(R.id.imageView_location);
         imageView_location.setOnClickListener(this);
         realjinrisiciTextView = findViewById(R.id.realjinrisiciTextView);
+
+        RefreshLayout refreshLayout = (RefreshLayout)findViewById(R.id.refreshLayout);
+        //设置 Header 为 贝塞尔雷达 样式
+//        refreshLayout.setRefreshHeader(new BezierRadarHeader(this).setEnableHorizontalDrag(true));
+        //设置 Footer 为 球脉冲 样式
+        refreshLayout.setRefreshFooter(new BallPulseFooter(this).setSpinnerStyle(SpinnerStyle.Scale));
+//        refreshLayout.setRefreshHeader(new ClassicsHeader(this));
+        refreshLayout.setRefreshFooter(new ClassicsFooter(this));
+        refreshLayout.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(RefreshLayout refreshlayout) {
+//                refreshlayout.finishRefresh(2000/*,false*/);//传入false表示刷新失败
+                jrscapi();
+                sendRequestWithOkHttp(City,WeatherApiKey);
+                AirsendRequestWithOkHttp(City,newWeatherApiKey);
+                refreshlayout.finishRefresh();
+            }
+        });
+        refreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore(RefreshLayout refreshlayout) {
+                refreshlayout.finishLoadMore(2000/*,false*/);//传入false表示加载失败
+            }
+        });
     }
 
     /**
@@ -209,19 +254,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         sendRequestWithOkHttp(City,WeatherApiKey);
         AirsendRequestWithOkHttp(City,newWeatherApiKey);
         forecastsendRequestWithOkHttp(City,newWeatherApiKey);
-    }
-
-    private void jrsc(){
-        final JinrishiciTextView jinrishiciTextView = findViewById(R.id.jinrisiciTextView);
-        jinrishiciTextView.setDataFormat(new JinrishiciTextView.DataFormatListener() {
-            @Override
-            public String set(PoetySentence poetySentence) {
-                //TODO return String by yourself
-                jrsctext = poetySentence.getData().getContent();
-                realjinrisiciTextView.setText(jrsctext);
-                return "";
-            }
-        });
     }
 
     /**
