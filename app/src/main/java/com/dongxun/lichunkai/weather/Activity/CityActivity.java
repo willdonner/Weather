@@ -62,7 +62,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
      * 搜索城市
      */
     private String[] searchCity() {
-        final String[] searchData = {"","","","","","","","","",""};//默认十条数据
+        final String[] searchData = {"","","","","","","","","","","","","","","","","","","",""};//默认十条数据
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -70,7 +70,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
                     OkHttpClient client = new OkHttpClient();//新建一个OKHttp的对象
                     //和风请求方式
                     Request request = new Request.Builder()
-                            .url("https://search.heweather.net/find?location="+editText_city.getText().toString()+"&key=d0922bd7034d4e669fda94cb4254ae19")
+                            .url("https://search.heweather.net/find?number=20&location="+editText_city.getText().toString()+"&key=d0922bd7034d4e669fda94cb4254ae19")
                             .build();//创建一个Request对象
                     //第三步构建Call对象
                     Call call = client.newCall(request);
@@ -79,7 +79,6 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void onFailure(Call call, IOException e) {
                             //显示信息
-
                         }
                         @Override
                         public void onResponse(Call call, Response response) throws IOException {
@@ -100,7 +99,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            setHotCityAdapter(searchData);
+                                            setHotAdapter(searchData);
                                         }
                                     });
 
@@ -123,15 +122,15 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
 
 
     /**
-     * 设置热门城市适配器
+     * 设置列表适配器
      */
-    private void setHotCityAdapter(String[] data) {
+    private void setHotAdapter(final String[] data) {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,data);
         ListView_hotCity.setAdapter(adapter);
         ListView_hotCity.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(view.getContext(),hotCitys[i],Toast.LENGTH_SHORT).show();
+                Toast.makeText(view.getContext(),data[i],Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -177,7 +176,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            setHotCityAdapter(hotCitys);
+                                            setHotAdapter(hotCitys);
                                         }
                                     });
 
@@ -255,7 +254,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
             imageView_logo.setImageResource(R.drawable.logo_search);
             textView_title.setText("搜索结果");
         }else {
-            setHotCityAdapter(hotCitys);
+            setHotAdapter(hotCitys);
             imageView_logo.setImageResource(R.drawable.logo_hotcity);
             textView_title.setText("热门城市");
         }
