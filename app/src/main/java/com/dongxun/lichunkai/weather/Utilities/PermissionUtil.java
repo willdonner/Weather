@@ -13,7 +13,7 @@ import androidx.core.content.ContextCompat;
 public class PermissionUtil {
 
     private static PermissionUtil mInstance;
-    
+
     public static final int REQUEST_PERMISSION_CAMERA = 501;//相机权限申请
     public static final int REQUEST_PERMISSION_SD = 502;//SD卡权限申请
     public static final int REQUEST_PERMISSION_AUDIO = 503;//录音权限申请
@@ -46,7 +46,7 @@ public class PermissionUtil {
      * @param requestCode
      * @return
      */
-    private boolean requestPermission(Activity activity, String[] permission, int requestCode) {
+    public boolean requestPermission(Activity activity, String[] permission, int requestCode) {
         boolean isHasPermission = false;//默认没有权限
         if (ContextCompat.checkSelfPermission(activity, permission[0]) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(activity, permission, requestCode);
