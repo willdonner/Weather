@@ -102,6 +102,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
                                         @Override
                                         public void run() {
                                             imageView_noData.setVisibility(View.GONE);
+                                            ListView_hotCity.setVisibility(View.VISIBLE);
                                             setHotAdapter(searchData);
                                         }
                                     });
@@ -266,6 +267,8 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
             imageView_logo.setImageResource(R.drawable.logo_search);
             textView_title.setText("搜索结果");
         }else {
+            imageView_noData.setVisibility(View.GONE);
+            ListView_hotCity.setVisibility(View.VISIBLE);
             setHotAdapter(hotCitys);
             imageView_logo.setImageResource(R.drawable.logo_hotcity);
             textView_title.setText("热门城市");
