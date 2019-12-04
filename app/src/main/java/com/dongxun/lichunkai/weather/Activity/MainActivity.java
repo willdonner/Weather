@@ -59,7 +59,7 @@ import okhttp3.Response;
 
 import static com.dongxun.lichunkai.weather.Utilities.ToolHelper.*;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private String TAG = "MainActivity";
     private LocationManager locationManager;
@@ -84,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
     private String WeatherApiKey_backup;
     private String newWeatherApiKey;
     private RealtimeInfo realtimeInfo = new RealtimeInfo();
+    private ImageView imageView_location;
+    private String jrsctext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -213,6 +215,8 @@ public class MainActivity extends AppCompatActivity {
         textView_loading = findViewById(R.id.textView_loading);
         imageView_loading = findViewById(R.id.imageView_loading);
         LinearLayout_message = findViewById(R.id.LinearLayout_message);
+        imageView_location = findViewById(R.id.imageView_location);
+        imageView_location.setOnClickListener(this);
         realjinrisiciTextView = findViewById(R.id.realjinrisiciTextView);
 
         RefreshLayout refreshLayout = (RefreshLayout)findViewById(R.id.refreshLayout);
@@ -587,4 +591,14 @@ public class MainActivity extends AppCompatActivity {
         moveTaskToBack(true);
     }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.imageView_location:
+                Intent intent = new Intent(MainActivity.this,CityActivity.class);
+                intent.putExtra("currentCity",City);
+                startActivity(intent);
+                break;
+        }
+    }
 }
