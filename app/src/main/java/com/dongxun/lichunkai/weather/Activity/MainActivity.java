@@ -520,7 +520,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        textView_aqi.setText("空气" + ToolHelper.getAqiLevel(Integer.parseInt(air_q)) + " " + air_q);
+                        //描述太长隐藏”空气“
+                        if (ToolHelper.getAqiLevel(Integer.parseInt(air_q)).length()>2){
+                            textView_aqi.setText(ToolHelper.getAqiLevel(Integer.parseInt(air_q)) + " " + air_q);
+                        }else {
+                            textView_aqi.setText("空气" + ToolHelper.getAqiLevel(Integer.parseInt(air_q)) + " " + air_q);
+                        }
                     }});
             }else {
                 searchFail("");
@@ -629,6 +634,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 {
                     //获取返回信息并获取数据
                     String resultCity = data.getStringExtra("resultCity");
+                    City = resultCity;
                     getDataByCity(resultCity);
                 }
                 break;
