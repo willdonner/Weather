@@ -108,7 +108,6 @@
                 android:background="#fff"
                 android:divider="#efefef"
                 android:dividerHeight="1px">
-
             </ListView>
 
             <ImageView
