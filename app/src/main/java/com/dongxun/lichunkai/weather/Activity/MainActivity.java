@@ -592,13 +592,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         moveTaskToBack(true);
     }
 
+
+    /**
+     * 处理返回数据
+     * @param requestCode 请求码
+     * @param resultCode 返回码
+     * @param data 返回数据
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case 1:
+                if (resultCode == RESULT_OK)
+                {
+                    //获取返回信息并获取数据
+                    String resultCity = data.getStringExtra("resultCity");
+                    getDataByCity();
+                }
+                break;
+            default:
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.imageView_location:
                 Intent intent = new Intent(MainActivity.this,CityActivity.class);
                 intent.putExtra("currentCity",City);
-                startActivity(intent);
+                startActivityForResult(intent,1);
                 break;
         }
     }

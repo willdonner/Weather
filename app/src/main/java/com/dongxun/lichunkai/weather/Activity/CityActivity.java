@@ -142,7 +142,12 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
         ListView_hotCity.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(view.getContext(),data[i],Toast.LENGTH_SHORT).show();
+//                Toast.makeText(view.getContext(),data[i],Toast.LENGTH_SHORT).show();
+                //返回数据
+                Intent intent = new Intent();
+                intent.putExtra("resultCity",data[i]);
+                setResult(RESULT_OK,intent);
+                finish();
             }
         });
     }
@@ -250,7 +255,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
                 finish();
                 break;
             case R.id.LinearLayout_currentCity:
-                Toast.makeText(this,"当前城市",Toast.LENGTH_SHORT).show();
+                finish();
                 break;
         }
     }
