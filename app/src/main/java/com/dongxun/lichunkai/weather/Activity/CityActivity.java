@@ -12,16 +12,20 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dongxun.lichunkai.weather.Adapter.SearchCityAdapter;
 import com.dongxun.lichunkai.weather.Adapter.SearchHistoryAdapter;
+import com.dongxun.lichunkai.weather.Class.SearchCity;
 import com.dongxun.lichunkai.weather.R;
 import com.gyf.immersionbar.ImmersionBar;
 
@@ -57,8 +61,9 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
 
 
     private String currentCity = "";
-    private String[] hotCitys = {"","","","","","","","","",""};
     private List<String> searchHistoryList = new ArrayList<>();
+    private List<SearchCity> hotCity = new ArrayList<>();
+
 
 
     @Override
@@ -154,8 +159,9 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * 搜索城市
      */
-    private String[] searchCity() {
-        final String[] searchData = {"","","","","","","","","","","","","","","","","","","",""};//默认二十条数据
+    private void searchCity() {
+//        final String[] searchData = {"","","","","","","","","","","","","","","","","","","",""};//默认二十条数据
+        final List<SearchCity> searchData = new ArrayList<>();
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -188,7 +194,12 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
                                     for (int i =0;i < object.length();i++){
                                         JSONObject object1 = object.getJSONObject(i);
                                         String location = object1.getString("location");
-                                        searchData[i] = location;
+                                        String parent_city = object1.getString("parent_city");
+
+                                        SearchCity searchCity = new SearchCity();
+                                        searchCity.setLocation(location);
+                                        searchCity.setParent_city(parent_city);
+                                        searchData.add(searchCity);
                                     }
                                     runOnUiThread(new Runnable() {
                                         @Override
@@ -221,25 +232,25 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
                 }
             }
         }).start();
-        return searchData;
     }
 
 
     /**
      * 设置列表适配器
      */
-    private void setHotAdapter(final String[] data) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,data);
+    private void setHotAdapter(final List<SearchCity> searchData) {
+        SearchCityAdapter adapter = new SearchCityAdapter(this,R.layout.searchcity,searchData);
         ListView_hotCity.setAdapter(adapter);
         ListView_hotCity.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 //                Toast.makeText(view.getContext(),data[i],Toast.LENGTH_SHORT).show();
 
-                addSearchHistory(data[i]);
+                //存储地点
+                addSearchHistory(searchData.get(i).getLocation());
 
-                //返回数据
-                backWithData(data[i]);
+                //返回数据（返回城市）
+                backWithData(searchData.get(i).getParent_city());
             }
         });
     }
@@ -250,6 +261,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
     public void addSearchHistory(String city) {
         //获取搜索过的城市
         searchHistoryList = getHistoryCity();
+        if (searchHistoryList.contains(city)) return;
         String saveData = "";
         for (int j = 0;j<searchHistoryList.size();j++){
             Log.w("TAG", "onItemClick: " +searchHistoryList.get(j));
@@ -284,7 +296,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
                     OkHttpClient client = new OkHttpClient();//新建一个OKHttp的对象
                     //和风请求方式
                     Request request = new Request.Builder()
-                            .url("https://search.heweather.net/top?group=cn&key="+newWeatherApiKey+"&number=10")
+                            .url("https://search.heweather.net/top?group=cn&key="+newWeatherApiKey+"&number=20")
                             .build();//创建一个Request对象
                     //第三步构建Call对象
                     Call call = client.newCall(request);
@@ -309,12 +321,17 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
                                     for (int i =0;i < object.length();i++){
                                         JSONObject object1 = object.getJSONObject(i);
                                         String location = object1.getString("location");
-                                        hotCitys[i] = location;
+                                        String parent_city = object1.getString("parent_city");
+
+                                        SearchCity searchCity = new SearchCity();
+                                        searchCity.setLocation(location);
+                                        searchCity.setParent_city(parent_city);
+                                        hotCity.add(searchCity);
                                     }
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            setHotAdapter(hotCitys);
+                                            setHotAdapter(hotCity);
                                         }
                                     });
 
@@ -392,19 +409,21 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
         if (editText_city.getText().toString().length() != 0){
-            LinearLayout_history.setVisibility(View.GONE);
+            //搜索
             searchCity();
+            //更换UI
             imageView_logo.setImageResource(R.drawable.logo_search);
             textView_title.setText("搜索结果");
         }else {
-            LinearLayout_history.setVisibility(View.VISIBLE);
+            //显示搜索历史和热门城市
             imageView_noData_hotCity.setVisibility(View.GONE);
             ListView_hotCity.setVisibility(View.VISIBLE);
-            setHotAdapter(hotCitys);
+            setHotAdapter(hotCity);
             imageView_logo.setImageResource(R.drawable.logo_hotcity);
             textView_title.setText("热门城市");
         }
     }
+
     //输入框内容改变后
     @Override
     public void afterTextChanged(Editable editable) {
