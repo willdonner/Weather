@@ -221,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         imageView_location.setOnClickListener(this);
         realjinrisiciTextView = findViewById(R.id.realjinrisiciTextView);
 
-        RefreshLayout refreshLayout = (RefreshLayout)findViewById(R.id.refreshLayout);
+        final RefreshLayout refreshLayout = (RefreshLayout)findViewById(R.id.refreshLayout);
         //设置 Header 为 贝塞尔雷达 样式
         refreshLayout.setRefreshHeader(new BezierRadarHeader(this).setEnableHorizontalDrag(true));
         //设置 Footer 为 球脉冲 样式
@@ -231,7 +231,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         refreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(RefreshLayout refreshlayout) {
-//                refreshlayout.finishRefresh(2000/*,false*/);//传入false表示刷新失败
                 jrscapi();
                 sendRequestWithOkHttp(City,WeatherApiKey);
                 AirsendRequestWithOkHttp(City,newWeatherApiKey);
@@ -241,7 +240,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         refreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore(RefreshLayout refreshlayout) {
-                refreshlayout.finishLoadMore(2000/*,false*/);//传入false表示加载失败
+                forecastsendRequestWithOkHttp(City,newWeatherApiKey,0);//items==0的时候加载全部7天数据
+                refreshLayout.finishLoadMore();
             }
         });
     }
@@ -255,7 +255,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 发送查询天气请求
         sendRequestWithOkHttp(city,WeatherApiKey);
         AirsendRequestWithOkHttp(city,newWeatherApiKey);
-        forecastsendRequestWithOkHttp(city,newWeatherApiKey);
+        forecastsendRequestWithOkHttp(city,newWeatherApiKey,5);//加载5天数据
     }
 
     /**
@@ -389,7 +389,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * 请求天气未来7天的天气数据
      */
-    private void forecastsendRequestWithOkHttp(final String city,final String apikey){
+    private void forecastsendRequestWithOkHttp(final String city, final String apikey, final int items){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -415,7 +415,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             try {
                                 JSONObject responses = new JSONObject(responseData);
                                 String newresponse = responses.getString("HeWeather6");
-                                forecastparseJSON(newresponse);//解析JSON
+                                forecastparseJSON(newresponse,items);//解析JSON
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -433,7 +433,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * 解析未来天气JSON（和风API）
      * @param responseData
      */
-    private void forecastparseJSON(String responseData) {
+    private void forecastparseJSON(String responseData,int items) {
         String basic= null,status = null,now= null,daily_forecast = null;
         try {
             JSONArray arr = new JSONArray(responseData);
@@ -448,21 +448,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 JSONArray jsonObjectnow = new JSONArray(daily_forecast);
                 //未来天气信息
                 futureInfos.removeAll(futureInfos);
-                for (int i = 0;i < 5;i++) {
-                    JSONObject future = jsonObjectnow.getJSONObject(i);
+                if(items==0){
+                    for (int i = 0;i < jsonObjectnow.length();i++) {
+                        JSONObject future = jsonObjectnow.getJSONObject(i);
 
-                    FutureInfo futureInfo = new FutureInfo();
-                    futureInfo.setDate(future.getString("date"));
-                    futureInfo.setTemperature(future.getString("tmp_max")+"℃"+"/"+future.getString("tmp_min")+"℃");
-                    futureInfo.setWeather(future.getString("cond_txt_n"));
-                    futureInfo.setWid_day(future.getString("wind_sc"));
+                        FutureInfo futureInfo = new FutureInfo();
+                        futureInfo.setDate(future.getString("date"));
+                        futureInfo.setTemperature(future.getString("tmp_max")+"℃"+"/"+future.getString("tmp_min")+"℃");
+                        futureInfo.setWeather(future.getString("cond_txt_n"));
+                        futureInfo.setWid_day(future.getString("wind_sc"));
 //                    futureInfo.setWid_night(future.getString("wind_sc"));
 //                    futureInfo.setDirect(future.getString("wind_dir"));
-                    futureInfo.setToday(i == 0?true:false);
-                    futureInfo.setWeek(ToolHelper.getWeekByDate(future.getString("date")));
-                    futureInfo.setWid_img(ToolHelper.getWidImg(ToolHelper.isDay()?future.getString("cond_code_d"):future.getString("cond_code_n"),false));
-                    futureInfos.add(futureInfo);
+                        futureInfo.setToday(i == 0?true:false);
+                        futureInfo.setWeek(ToolHelper.getWeekByDate(future.getString("date")));
+                        futureInfo.setWid_img(ToolHelper.getWidImg(ToolHelper.isDay()?future.getString("cond_code_d"):future.getString("cond_code_n"),false));
+                        futureInfos.add(futureInfo);
+                    }
                 }
+                else{
+                    for (int i = 0;i < items;i++) {
+                        JSONObject future = jsonObjectnow.getJSONObject(i);
+
+                        FutureInfo futureInfo = new FutureInfo();
+                        futureInfo.setDate(future.getString("date"));
+                        futureInfo.setTemperature(future.getString("tmp_max")+"℃"+"/"+future.getString("tmp_min")+"℃");
+                        futureInfo.setWeather(future.getString("cond_txt_n"));
+                        futureInfo.setWid_day(future.getString("wind_sc"));
+//                    futureInfo.setWid_night(future.getString("wind_sc"));
+//                    futureInfo.setDirect(future.getString("wind_dir"));
+                        futureInfo.setToday(i == 0?true:false);
+                        futureInfo.setWeek(ToolHelper.getWeekByDate(future.getString("date")));
+                        futureInfo.setWid_img(ToolHelper.getWidImg(ToolHelper.isDay()?future.getString("cond_code_d"):future.getString("cond_code_n"),false));
+                        futureInfos.add(futureInfo);
+                    }
+                }
+
 
                 runOnUiThread(new Runnable() {
                     @Override
