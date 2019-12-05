@@ -461,7 +461,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                    futureInfo.setDirect(future.getString("wind_dir"));
                         futureInfo.setToday(i == 0?true:false);
                         futureInfo.setWeek(ToolHelper.getWeekByDate(future.getString("date")));
-                        futureInfo.setWid_img(ToolHelper.getWidImg(ToolHelper.isDay()?future.getString("cond_code_d"):future.getString("cond_code_n"),false));
+                        futureInfo.setWid_img(ToolHelper.getWidImg(ToolHelper.isDay()?future.getString("cond_code_d"):future.getString("cond_code_n"),ToolHelper.isDay()));
                         futureInfos.add(futureInfo);
                     }
                 }
