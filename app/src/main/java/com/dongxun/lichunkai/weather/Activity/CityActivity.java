@@ -43,6 +43,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView imageView_logo;
     private TextView textView_title;
     private ImageView imageView_noData;
+    private String newWeatherApiKey;
 
 
     private String currentCity = "";
@@ -52,7 +53,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_city);
-
+        newWeatherApiKey = getResources().getString(R.string.newapikey);
         initStateBar();
         initView();
         initIntentData();
@@ -71,7 +72,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
                     OkHttpClient client = new OkHttpClient();//新建一个OKHttp的对象
                     //和风请求方式
                     Request request = new Request.Builder()
-                            .url("https://search.heweather.net/find?number=20&location="+editText_city.getText().toString()+"&key=d0922bd7034d4e669fda94cb4254ae19")
+                            .url("https://search.heweather.net/find?number=20&location="+editText_city.getText().toString()+"&key="+newWeatherApiKey)
                             .build();//创建一个Request对象
                     //第三步构建Call对象
                     Call call = client.newCall(request);
@@ -158,7 +159,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
                     OkHttpClient client = new OkHttpClient();//新建一个OKHttp的对象
                     //和风请求方式
                     Request request = new Request.Builder()
-                            .url("https://search.heweather.net/top?group=cn&key=d0922bd7034d4e669fda94cb4254ae19&number=10")
+                            .url("https://search.heweather.net/top?group=cn&key="+newWeatherApiKey+"&number=10")
                             .build();//创建一个Request对象
                     //第三步构建Call对象
                     Call call = client.newCall(request);
