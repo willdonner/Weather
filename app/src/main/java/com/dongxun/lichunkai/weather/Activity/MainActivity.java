@@ -39,6 +39,7 @@ import com.jinrishici.sdk.android.model.JinrishiciRuntimeException;
 import com.jinrishici.sdk.android.model.PoetySentence;
 import com.scwang.smart.refresh.footer.BallPulseFooter;
 import com.scwang.smart.refresh.footer.ClassicsFooter;
+import com.scwang.smart.refresh.header.BezierRadarHeader;
 import com.scwang.smart.refresh.layout.api.RefreshLayout;
 import com.scwang.smart.refresh.layout.constant.SpinnerStyle;
 import com.scwang.smart.refresh.layout.listener.OnLoadMoreListener;
@@ -178,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         WindowManager wm = (WindowManager) this.getSystemService(Context.WINDOW_SERVICE);
         int height = wm.getDefaultDisplay().getHeight();
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.topMargin = -(height - imageView_back.getHeight())/2;
+        layoutParams.topMargin = -(height - imageView_back.getHeight())/5;
         imageView_back.setLayoutParams(layoutParams);
     }
 
@@ -222,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         RefreshLayout refreshLayout = (RefreshLayout)findViewById(R.id.refreshLayout);
         //设置 Header 为 贝塞尔雷达 样式
-//        refreshLayout.setRefreshHeader(new BezierRadarHeader(this).setEnableHorizontalDrag(true));
+        refreshLayout.setRefreshHeader(new BezierRadarHeader(this).setEnableHorizontalDrag(true));
         //设置 Footer 为 球脉冲 样式
         refreshLayout.setRefreshFooter(new BallPulseFooter(this).setSpinnerStyle(SpinnerStyle.Scale));
 //        refreshLayout.setRefreshHeader(new ClassicsHeader(this));
