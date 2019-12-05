@@ -53,6 +53,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
     private String newWeatherApiKey;
     private RecyclerView recyclerView_history;
     private ImageView imageView_noData_historyCity;
+    private LinearLayout LinearLayout_history;
 
 
     private String currentCity = "";
@@ -360,6 +361,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
         imageView_noData_hotCity = findViewById(R.id.imageView_noData_hotCity);
         recyclerView_history = findViewById(R.id.recyclerView_history);
         imageView_noData_historyCity = findViewById(R.id.imageView_noData_historyCity);
+        LinearLayout_history = findViewById(R.id.LinearLayout_history);
     }
 
     /**
@@ -390,10 +392,12 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
         if (editText_city.getText().toString().length() != 0){
+            LinearLayout_history.setVisibility(View.GONE);
             searchCity();
             imageView_logo.setImageResource(R.drawable.logo_search);
             textView_title.setText("搜索结果");
         }else {
+            LinearLayout_history.setVisibility(View.VISIBLE);
             imageView_noData_hotCity.setVisibility(View.GONE);
             ListView_hotCity.setVisibility(View.VISIBLE);
             setHotAdapter(hotCitys);
