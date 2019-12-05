@@ -248,13 +248,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * 定位后根据城市查询天气
      */
-    private void getDataByCity() {
+    private void getDataByCity(String city) {
         //显示信息
         showMessage(1);
         // 发送查询天气请求
-        sendRequestWithOkHttp(City,WeatherApiKey);
-        AirsendRequestWithOkHttp(City,newWeatherApiKey);
-        forecastsendRequestWithOkHttp(City,newWeatherApiKey);
+        sendRequestWithOkHttp(city,WeatherApiKey);
+        AirsendRequestWithOkHttp(city,newWeatherApiKey);
+        forecastsendRequestWithOkHttp(city,newWeatherApiKey);
     }
 
     /**
@@ -265,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 != PackageManager.PERMISSION_GRANTED) {
             PermissionUtil.getInstance().requestLocation(this);
         }else {
-            getDataByCity();
+            getDataByCity(City);
         }
     }
 
@@ -281,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (requestCode){
             case 504:
                 if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    getDataByCity();
+                    getDataByCity(City);
                 }else{
                     //跳转应用详情页
                     startActivity(appSetIntent(this));
@@ -607,7 +607,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 {
                     //获取返回信息并获取数据
                     String resultCity = data.getStringExtra("resultCity");
-                    getDataByCity();
+                    getDataByCity(resultCity);
                 }
                 break;
             default:
