@@ -608,6 +608,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 {
                     //获取返回信息并获取数据
                     String resultCity = data.getStringExtra("resultCity");
+                    City = resultCity;
                     getDataByCity(resultCity);
                 }
                 break;
