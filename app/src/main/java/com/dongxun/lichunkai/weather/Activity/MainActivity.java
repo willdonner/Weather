@@ -249,13 +249,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * 定位后根据城市查询天气
      */
-    private void getDataByCity() {
+    private void getDataByCity(String city) {
         //显示信息
         showMessage(1);
         // 发送查询天气请求
-        sendRequestWithOkHttp(City,WeatherApiKey);
-        AirsendRequestWithOkHttp(City,newWeatherApiKey);
-        forecastsendRequestWithOkHttp(City,newWeatherApiKey);
+        sendRequestWithOkHttp(city,WeatherApiKey);
+        AirsendRequestWithOkHttp(city,newWeatherApiKey);
+        forecastsendRequestWithOkHttp(city,newWeatherApiKey);
     }
 
     /**
@@ -266,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 != PackageManager.PERMISSION_GRANTED) {
             PermissionUtil.getInstance().requestLocation(this);
         }else {
-            getDataByCity();
+            getDataByCity(City);
         }
     }
 
@@ -282,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (requestCode){
             case 504:
                 if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    getDataByCity();
+                    getDataByCity(City);
                 }else{
                     //跳转应用详情页
                     startActivity(appSetIntent(this));
@@ -430,7 +430,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
-     * 解析当前天气未来天气JSON（和风API）
+     * 解析未来天气JSON（和风API）
      * @param responseData
      */
     private void forecastparseJSON(String responseData) {
@@ -447,6 +447,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //当前空气质量信息
                 JSONArray jsonObjectnow = new JSONArray(daily_forecast);
                 //未来天气信息
+                futureInfos.removeAll(futureInfos);
                 for (int i = 0;i < 5;i++) {
                     JSONObject future = jsonObjectnow.getJSONObject(i);
 
@@ -593,13 +594,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         moveTaskToBack(true);
     }
 
+
+    /**
+     * 处理返回数据
+     * @param requestCode 请求码
+     * @param resultCode 返回码
+     * @param data 返回数据
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case 1:
+                if (resultCode == RESULT_OK)
+                {
+                    //获取返回信息并获取数据
+                    String resultCity = data.getStringExtra("resultCity");
+                    getDataByCity(resultCity);
+                }
+                break;
+            default:
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.imageView_location:
                 Intent intent = new Intent(MainActivity.this,CityActivity.class);
                 intent.putExtra("currentCity",City);
-                startActivity(intent);
+                startActivityForResult(intent,1);
                 break;
         }
     }
