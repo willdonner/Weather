@@ -232,24 +232,30 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 //                Toast.makeText(view.getContext(),data[i],Toast.LENGTH_SHORT).show();
 
-                //获取搜索过的城市
-                searchHistoryList = getHistoryCity();
-                String saveData = "";
-                for (int j = 0;j<searchHistoryList.size();j++){
-                    Log.w("TAG", "onItemClick: " +searchHistoryList.get(j));
-                    saveData = saveData.length() == 0?searchHistoryList.get(j):saveData + "," + searchHistoryList.get(j);
-                }
-                saveData = saveData + "," + data[i];
-
-                //保存搜索数据
-                SharedPreferences.Editor editor = getSharedPreferences("data",MODE_PRIVATE).edit();
-                editor.putString("searchHistoryCity",saveData);
-                editor.apply();
+                addSearchHistory(data[i]);
 
                 //返回数据
                 backWithData(data[i]);
             }
         });
+    }
+
+    /**
+     * 添加搜索记录
+     */
+    public void addSearchHistory(String city) {
+        //获取搜索过的城市
+        searchHistoryList = getHistoryCity();
+        String saveData = "";
+        for (int j = 0;j<searchHistoryList.size();j++){
+            Log.w("TAG", "onItemClick: " +searchHistoryList.get(j));
+            saveData = saveData.length() == 0?searchHistoryList.get(j):saveData + "," + searchHistoryList.get(j);
+        }
+        saveData = saveData + "," + city;
+        //保存搜索数据
+        SharedPreferences.Editor editor = getSharedPreferences("data",MODE_PRIVATE).edit();
+        editor.putString("searchHistoryCity",saveData);
+        editor.apply();
     }
 
     /**
