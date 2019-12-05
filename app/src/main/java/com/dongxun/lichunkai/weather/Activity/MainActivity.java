@@ -429,7 +429,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     /**
-     * 解析当前天气未来天气JSON（和风API）
+     * 解析未来天气JSON（和风API）
      * @param responseData
      */
     private void forecastparseJSON(String responseData) {
@@ -446,6 +446,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //当前空气质量信息
                 JSONArray jsonObjectnow = new JSONArray(daily_forecast);
                 //未来天气信息
+                futureInfos.removeAll(futureInfos);
                 for (int i = 0;i < 5;i++) {
                     JSONObject future = jsonObjectnow.getJSONObject(i);
 
