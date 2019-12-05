@@ -112,7 +112,7 @@
             </ListView>
 
             <ImageView
-                android:id="@+id/imageView_noData"
+                android:id="@+id/imageView_noData_hotCity"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_gravity="center"
@@ -158,6 +158,14 @@
                 android:background="#fff"
                 android:divider="#efefef"
                 android:dividerHeight="1px" />
+            <ImageView
+                android:id="@+id/imageView_noData_historyCity"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="100dp"
+                android:visibility="gone"
+                app:srcCompat="@drawable/logo_nodata" />
         </LinearLayout>
 
     </LinearLayout>

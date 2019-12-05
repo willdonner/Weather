@@ -49,9 +49,10 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
     private ListView ListView_hotCity;
     private ImageView imageView_logo;
     private TextView textView_title;
-    private ImageView imageView_noData;
+    private ImageView imageView_noData_hotCity;
     private String newWeatherApiKey;
     private RecyclerView recyclerView_history;
+    private ImageView imageView_noData_historyCity;
 
 
     private String currentCity = "";
@@ -80,37 +81,39 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
         //获取搜索过的城市
         searchHistoryList.removeAll(searchHistoryList);
         searchHistoryList = getHistoryCity();
-
         //有搜索历史显示，无不显示
         if (searchHistoryList.size() == 0) {
             recyclerView_history.setVisibility(View.GONE);
+            imageView_noData_historyCity.setVisibility(View.VISIBLE);
             return;
-        }
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        recyclerView_history.setLayoutManager(layoutManager);
-        SearchHistoryAdapter searchHistoryAdapter = new SearchHistoryAdapter(searchHistoryList);
-        recyclerView_history.setAdapter(searchHistoryAdapter);
+        }else {
+            recyclerView_history.setVisibility(View.VISIBLE);
+            imageView_noData_historyCity.setVisibility(View.GONE);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+            recyclerView_history.setLayoutManager(layoutManager);
+            SearchHistoryAdapter searchHistoryAdapter = new SearchHistoryAdapter(searchHistoryList);
+            recyclerView_history.setAdapter(searchHistoryAdapter);
 
-        //点击事件(实现自定义的点击事件接口)
-        searchHistoryAdapter.setOnItemClickListener(new SearchHistoryAdapter.OnItemClickListener() {
-            @Override
-            public void onClickChoose(int position) {
-                //选取城市
-                backWithData(searchHistoryList.get(position));
-            }
-            @Override
-            public void onClickDelete(int position) {
-                //删除城市
-                searchHistoryList = getHistoryCity();
-                searchHistoryList.remove(position);
-                deleteSearchHistory(searchHistoryList);
-                //重新加载RecycleView
-                getSearchHistory();
-            }
-        });
+            //点击事件(实现自定义的点击事件接口)
+            searchHistoryAdapter.setOnItemClickListener(new SearchHistoryAdapter.OnItemClickListener() {
+                @Override
+                public void onClickChoose(int position) {
+                    //选取城市
+                    backWithData(searchHistoryList.get(position));
+                }
+                @Override
+                public void onClickDelete(int position) {
+                    //删除城市
+                    searchHistoryList = getHistoryCity();
+                    searchHistoryList.remove(position);
+                    deleteSearchHistory(searchHistoryList);
+                    //重新加载RecycleView
+                    getSearchHistory();
+                }
+            });
+        }
 
     }
-
 
     /**
      * 删除搜索历史
@@ -189,7 +192,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            imageView_noData.setVisibility(View.GONE);
+                                            imageView_noData_hotCity.setVisibility(View.GONE);
                                             ListView_hotCity.setVisibility(View.VISIBLE);
                                             setHotAdapter(searchData);
                                         }
@@ -199,7 +202,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            imageView_noData.setVisibility(View.VISIBLE);
+                                            imageView_noData_hotCity.setVisibility(View.VISIBLE);
                                             ListView_hotCity.setVisibility(View.GONE);
                                         }
                                     });
@@ -354,8 +357,9 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
         ListView_hotCity = findViewById(R.id.ListView_hotCity);
         imageView_logo = findViewById(R.id.imageView_logo);
         textView_title = findViewById(R.id.textView_title);
-        imageView_noData = findViewById(R.id.imageView_noData);
+        imageView_noData_hotCity = findViewById(R.id.imageView_noData_hotCity);
         recyclerView_history = findViewById(R.id.recyclerView_history);
+        imageView_noData_historyCity = findViewById(R.id.imageView_noData_historyCity);
     }
 
     /**
@@ -390,7 +394,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
             imageView_logo.setImageResource(R.drawable.logo_search);
             textView_title.setText("搜索结果");
         }else {
-            imageView_noData.setVisibility(View.GONE);
+            imageView_noData_hotCity.setVisibility(View.GONE);
             ListView_hotCity.setVisibility(View.VISIBLE);
             setHotAdapter(hotCitys);
             imageView_logo.setImageResource(R.drawable.logo_hotcity);
