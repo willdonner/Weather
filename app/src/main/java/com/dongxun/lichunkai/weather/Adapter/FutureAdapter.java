@@ -9,6 +9,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.dongxun.lichunkai.weather.Class.FutureInfo;
 import com.dongxun.lichunkai.weather.R;
 
@@ -33,7 +36,7 @@ public class FutureAdapter extends ArrayAdapter {
         if (convertView == null){
             // inflate出子项布局，实例化其中的图片控件和文本控件
             convertView = LayoutInflater.from(getContext()).inflate(resourceId, null);
-            viewHolder = new ViewHolder();
+            viewHolder = new ViewHolder(convertView);
             // 通过id得到图片控件实例
             viewHolder.imageView_wid = convertView.findViewById(R.id.future_imageView_wid);
             // 通过id得到文本空间实例
@@ -76,8 +79,12 @@ public class FutureAdapter extends ArrayAdapter {
     }
 
     // 内部类
-    class ViewHolder{
+    class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView_wid;
         TextView textView_week,textView_date,textView_weather,textView_temperature;
+
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+        }
     }
 }

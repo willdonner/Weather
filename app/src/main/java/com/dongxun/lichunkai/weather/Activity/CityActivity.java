@@ -1,8 +1,11 @@
 package com.dongxun.lichunkai.weather.Activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,6 +21,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dongxun.lichunkai.weather.Adapter.SearchHistoryAdapter;
 import com.dongxun.lichunkai.weather.R;
 import com.gyf.immersionbar.ImmersionBar;
 
@@ -26,6 +30,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -44,20 +51,100 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
     private TextView textView_title;
     private ImageView imageView_noData;
     private String newWeatherApiKey;
+    private RecyclerView recyclerView_history;
 
 
     private String currentCity = "";
     private String[] hotCitys = {"","","","","","","","","",""};
+    private List<String> searchHistoryList = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_city);
+
         newWeatherApiKey = getResources().getString(R.string.newapikey);
         initStateBar();
         initView();
         initIntentData();
         getHotCityRequestWithOkHttp();
+        getSearchHistory();
+    }
+
+    /**
+     * 搜索历史
+     */
+    private void getSearchHistory() {
+
+        //获取搜索过的城市
+        searchHistoryList.removeAll(searchHistoryList);
+        searchHistoryList = getHistoryCity();
+
+        //有搜索历史显示，无不显示
+        if (searchHistoryList.size() == 0) {
+            recyclerView_history.setVisibility(View.GONE);
+            return;
+        }
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView_history.setLayoutManager(layoutManager);
+        SearchHistoryAdapter searchHistoryAdapter = new SearchHistoryAdapter(searchHistoryList);
+        recyclerView_history.setAdapter(searchHistoryAdapter);
+
+        //点击事件(实现自定义的点击事件接口)
+        searchHistoryAdapter.setOnItemClickListener(new SearchHistoryAdapter.OnItemClickListener() {
+            @Override
+            public void onClickChoose(int position) {
+                //选取城市
+                backWithData(searchHistoryList.get(position));
+            }
+            @Override
+            public void onClickDelete(int position) {
+                //删除城市
+                searchHistoryList = getHistoryCity();
+                searchHistoryList.remove(position);
+                deleteSearchHistory(searchHistoryList);
+                //重新加载RecycleView
+                getSearchHistory();
+            }
+        });
+
+    }
+
+
+    /**
+     * 删除搜索历史
+     * @param list
+     */
+    public void deleteSearchHistory(List<String> list) {
+        String saveData = "";
+        for (int j = 0;j<searchHistoryList.size();j++){
+            Log.w("TAG", "onItemClick: " +searchHistoryList.get(j));
+            saveData = saveData.length() == 0?searchHistoryList.get(j):saveData + "," + searchHistoryList.get(j);
+        }
+        //保存搜索数据
+        SharedPreferences.Editor editor = getSharedPreferences("data",MODE_PRIVATE).edit();
+        editor.putString("searchHistoryCity",saveData);
+        editor.apply();
+    }
+
+    /**
+     * 获取搜索历史城市
+     * @return
+     */
+    public List<String> getHistoryCity() {
+        List<String> data = new ArrayList<>();
+        SharedPreferences preferences = getSharedPreferences("data",MODE_PRIVATE);
+        String searchHistoryCity = preferences.getString("searchHistoryCity","");
+
+        String[] saveData = searchHistoryCity.split(",");
+        for (int i=0;i<saveData.length;i++){
+            if (!saveData[i].trim().equals("")){
+                data.add(saveData[i]);
+            }
+        }
+
+        return data;
     }
 
     /**
@@ -144,13 +231,36 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 //                Toast.makeText(view.getContext(),data[i],Toast.LENGTH_SHORT).show();
+
+                //获取搜索过的城市
+                searchHistoryList = getHistoryCity();
+                String saveData = "";
+                for (int j = 0;j<searchHistoryList.size();j++){
+                    Log.w("TAG", "onItemClick: " +searchHistoryList.get(j));
+                    saveData = saveData.length() == 0?searchHistoryList.get(j):saveData + "," + searchHistoryList.get(j);
+                }
+                saveData = saveData + "," + data[i];
+
+                //保存搜索数据
+                SharedPreferences.Editor editor = getSharedPreferences("data",MODE_PRIVATE).edit();
+                editor.putString("searchHistoryCity",saveData);
+                editor.apply();
+
                 //返回数据
-                Intent intent = new Intent();
-                intent.putExtra("resultCity",data[i]);
-                setResult(RESULT_OK,intent);
-                finish();
+                backWithData(data[i]);
             }
         });
+    }
+
+    /**
+     * 带数据返回主页
+     * @param city
+     */
+    public void backWithData(String city) {
+        Intent intent = new Intent();
+        intent.putExtra("resultCity",city);
+        setResult(RESULT_OK,intent);
+        finish();
     }
 
     /**
@@ -239,6 +349,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
         imageView_logo = findViewById(R.id.imageView_logo);
         textView_title = findViewById(R.id.textView_title);
         imageView_noData = findViewById(R.id.imageView_noData);
+        recyclerView_history = findViewById(R.id.recyclerView_history);
     }
 
     /**
