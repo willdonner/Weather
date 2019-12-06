@@ -119,21 +119,6 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    /**
-     * 删除搜索历史
-     * @param list
-     */
-    public void deleteSearchHistory(List<String> list) {
-        String saveData = "";
-        for (int j = 0;j<searchHistoryList.size();j++){
-            Log.w("TAG", "onItemClick: " +searchHistoryList.get(j));
-            saveData = saveData.length() == 0?searchHistoryList.get(j):saveData + "," + searchHistoryList.get(j);
-        }
-        //保存搜索数据
-        SharedPreferences.Editor editor = getSharedPreferences("data",MODE_PRIVATE).edit();
-        editor.putString("searchHistoryCity",saveData);
-        editor.apply();
-    }
 
     /**
      * 获取搜索历史城市
