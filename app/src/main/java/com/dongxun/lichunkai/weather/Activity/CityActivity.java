@@ -86,7 +86,6 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
         apiStatusMap.put("invalid key","无效的key，请检查你的key是否输入以及是否输入有误");
         apiStatusMap.put("invalid key type","你输入的key不适用于当前获取数据的方式，即SDK的KEY不能用于Web API或通过接口直接访问，反之亦然");
         apiStatusMap.put("invalid param","无效的参数，请检查你传递的参数是否正确、完整");
-        apiStatusMap.put("invalid param","找不着");
         apiStatusMap.put("bad bind","错误的绑定，例如绑定的package name、bundle id或IP地址不一致的时候");
         apiStatusMap.put("no data for this location","该城市/地区没有你所请求的数据");
         apiStatusMap.put("no more requests","超过访问次数，需要等到当月最后一天24点（免费用户为当天24点）后进行访问次数的重置或升级你的访问量");

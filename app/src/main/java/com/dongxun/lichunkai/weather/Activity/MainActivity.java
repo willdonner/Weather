@@ -330,15 +330,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             String responseData = response.body().string();//处理返回的数据
                             try {
                                 JSONObject responses = new JSONObject(responseData);
-                                String error_code = responses.getString("error_code");
-                                if(error_code.equals("10012")){
-                                    sendRequestWithOkHttp(city,WeatherApiKey_backup);
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            try {
-                                JSONObject responses = new JSONObject(responseData);
                                 String newresponse = responses.getString("HeWeather6");
                                 parseJSON(newresponse);//解析JSON
                             } catch (JSONException e) {
