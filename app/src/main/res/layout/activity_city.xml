@@ -152,20 +152,34 @@
             <ListView
                 android:id="@+id/ListView_hotCity"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginHorizontal="10dp"
                 android:background="#fff"
                 android:divider="#efefef"
                 android:dividerHeight="1px"></ListView>
 
-            <ImageView
-                android:id="@+id/imageView_noData_hotCity"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="100dp"
-                android:visibility="gone"
-                app:srcCompat="@drawable/logo_nodata" />
+            <LinearLayout
+                android:id="@+id/LinearLayout_err"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="60dp"
+                    app:srcCompat="@drawable/logo_nodata" />
+
+                <TextView
+                    android:id="@+id/textView_errDetails"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center"
+                    android:text="搜索错误描述" />
+            </LinearLayout>
 
         </LinearLayout>
 

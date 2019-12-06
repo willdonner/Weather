@@ -13,11 +13,13 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.dongxun.lichunkai.weather.Activity.CityActivity;
 import com.dongxun.lichunkai.weather.R;
 
 import java.util.List;
 
+/**
+ * 历史记录适配器
+ */
 public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdapter.ViewHolder> {
 
     private List<String> mList;
@@ -38,7 +40,7 @@ public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdap
         mList = searchHistoryList;
     }
 
-    //第一步 定义接口（选择城市和删除城市）
+    //第一步 定义接口（点击城市标签）
     public interface OnItemClickListener {
         void onClick(int position);
     }

@@ -9,8 +9,7 @@
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:orientation="horizontal"
-        android:background="@drawable/back_radius"
-        >
+        android:background="@drawable/back_radius">
 
         <TextView
             android:id="@+id/textView_historyCity"
@@ -18,7 +17,6 @@
             android:layout_height="match_parent"
             android:layout_gravity="center_vertical"
             android:gravity="center_vertical"
-
             android:text="昆明"
             android:layout_marginHorizontal="10dp"
             android:textColor="#666666" />
