@@ -3,7 +3,11 @@ package com.dongxun.lichunkai.weather.Activity;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import android.app.AlertDialog;
+import android.app.StatusBarManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -58,6 +62,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
     private RecyclerView recyclerView_history;
     private ImageView imageView_noData_historyCity;
     private LinearLayout LinearLayout_history;
+    private ImageView imageView_delete;
 
 
     private String currentCity = "";
@@ -95,8 +100,11 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
         }else {
             recyclerView_history.setVisibility(View.VISIBLE);
             imageView_noData_historyCity.setVisibility(View.GONE);
+
             LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-            recyclerView_history.setLayoutManager(layoutManager);
+            StaggeredGridLayoutManager layoutManager1 = new StaggeredGridLayoutManager(4,StaggeredGridLayoutManager.VERTICAL);
+            layoutManager1.setOrientation(LinearLayoutManager.HORIZONTAL);
+            recyclerView_history.setLayoutManager(layoutManager1);
             SearchHistoryAdapter searchHistoryAdapter = new SearchHistoryAdapter(searchHistoryList);
             recyclerView_history.setAdapter(searchHistoryAdapter);
 
@@ -379,6 +387,8 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
         recyclerView_history = findViewById(R.id.recyclerView_history);
         imageView_noData_historyCity = findViewById(R.id.imageView_noData_historyCity);
         LinearLayout_history = findViewById(R.id.LinearLayout_history);
+        imageView_delete = findViewById(R.id.imageView_delete);
+        imageView_delete.setOnClickListener(this);
     }
 
     /**
@@ -397,6 +407,23 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.LinearLayout_currentCity:
                 finish();
+                break;
+            case R.id.imageView_delete:
+                AlertDialog.Builder builder  = new AlertDialog.Builder(this);
+                builder.setTitle("确认" ) ;
+                builder.setMessage("是否确认？" ) ;
+                builder.setPositiveButton("是", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        SharedPreferences.Editor editor = getSharedPreferences("data",MODE_PRIVATE).edit();
+                        editor.putString("searchHistoryCity","");
+                        editor.apply();
+                        //重新加载RecycleView
+                        getSearchHistory();
+                    }
+                });
+                builder.setNegativeButton("否", null);
+                builder.show();
                 break;
         }
     }
