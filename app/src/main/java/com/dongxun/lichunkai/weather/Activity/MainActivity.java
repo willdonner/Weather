@@ -25,6 +25,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.blankj.utilcode.util.NetworkUtils;
 import com.dongxun.lichunkai.weather.Adapter.FutureAdapter;
 import com.dongxun.lichunkai.weather.Class.FutureInfo;
 import com.dongxun.lichunkai.weather.Class.RealtimeInfo;
@@ -100,7 +101,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //和风天气api
         newWeatherApiKey = getResources().getString(R.string.newapikey);
         JinrishiciFactory.init(this);
-        jrscapi();
         ImmersionBar.with(this).init();
         initView();
         setBack();
@@ -231,10 +231,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         refreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(RefreshLayout refreshlayout) {
-                jrscapi();
-                sendRequestWithOkHttp(City,WeatherApiKey);
-                AirsendRequestWithOkHttp(City,newWeatherApiKey);
-                refreshlayout.finishRefresh();
+                if(NetworkUtils.isConnected()){
+                    jrscapi();
+                    sendRequestWithOkHttp(City,WeatherApiKey);
+                    AirsendRequestWithOkHttp(City,newWeatherApiKey);
+                    forecastsendRequestWithOkHttp(City,newWeatherApiKey,5);//加载5天数据
+                    refreshlayout.finishRefresh();
+                }
             }
         });
         refreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
@@ -253,9 +256,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //显示信息
         showMessage(1);
         // 发送查询天气请求
-        sendRequestWithOkHttp(city,WeatherApiKey);
-        AirsendRequestWithOkHttp(city,newWeatherApiKey);
-        forecastsendRequestWithOkHttp(city,newWeatherApiKey,5);//加载5天数据
+        if(NetworkUtils.isConnected()){
+            jrscapi();
+            sendRequestWithOkHttp(city,WeatherApiKey);
+            AirsendRequestWithOkHttp(city,newWeatherApiKey);
+            forecastsendRequestWithOkHttp(city,newWeatherApiKey,5);//加载5天数据
+        }
+        else{
+            Toast.makeText(this,"请打开网络连接",Toast.LENGTH_LONG).show();
+        }
+
+
     }
 
     /**
