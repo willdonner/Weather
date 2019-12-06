@@ -26,13 +26,11 @@ public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdap
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView textView_city;
-        LinearLayout LinearLayout_deleteHistory;
 
 
         public ViewHolder( View itemView) {
             super(itemView);
             textView_city = (TextView)itemView.findViewById(R.id.textView_historyCity);
-            LinearLayout_deleteHistory = (LinearLayout) itemView.findViewById(R.id.LinearLayout_deleteHistory);
         }
     }
 
@@ -42,8 +40,7 @@ public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdap
 
     //第一步 定义接口（选择城市和删除城市）
     public interface OnItemClickListener {
-        void onClickChoose(int position);
-        void onClickDelete(int position);
+        void onClick(int position);
     }
 
     //第二步， 写一个公共的方法
@@ -67,16 +64,7 @@ public class SearchHistoryAdapter extends RecyclerView.Adapter<SearchHistoryAdap
             @Override
             public void onClick(View v) {
                 if (listener != null) {
-                    listener.onClickChoose(position);
-                }
-            }
-        });
-
-        holder.LinearLayout_deleteHistory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listener != null) {
-                    listener.onClickDelete(position);
+                    listener.onClick(position);
                 }
             }
         });

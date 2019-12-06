@@ -101,9 +101,8 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
             recyclerView_history.setVisibility(View.VISIBLE);
             imageView_noData_historyCity.setVisibility(View.GONE);
 
-            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-            StaggeredGridLayoutManager layoutManager1 = new StaggeredGridLayoutManager(4,StaggeredGridLayoutManager.VERTICAL);
-            layoutManager1.setOrientation(LinearLayoutManager.HORIZONTAL);
+//            LinearLayoutManager layoutManager = new LinearLayoutManager(this);//列表
+            StaggeredGridLayoutManager layoutManager1 = new StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL);//瀑布流
             recyclerView_history.setLayoutManager(layoutManager1);
             SearchHistoryAdapter searchHistoryAdapter = new SearchHistoryAdapter(searchHistoryList);
             recyclerView_history.setAdapter(searchHistoryAdapter);
@@ -111,18 +110,9 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
             //点击事件(实现自定义的点击事件接口)
             searchHistoryAdapter.setOnItemClickListener(new SearchHistoryAdapter.OnItemClickListener() {
                 @Override
-                public void onClickChoose(int position) {
+                public void onClick(int position) {
                     //选取城市
                     backWithData(searchHistoryList.get(position));
-                }
-                @Override
-                public void onClickDelete(int position) {
-                    //删除城市
-                    searchHistoryList = getHistoryCity();
-                    searchHistoryList.remove(position);
-                    deleteSearchHistory(searchHistoryList);
-                    //重新加载RecycleView
-                    getSearchHistory();
                 }
             });
         }
@@ -415,6 +405,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
                 builder.setPositiveButton("是", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        //保存空数据
                         SharedPreferences.Editor editor = getSharedPreferences("data",MODE_PRIVATE).edit();
                         editor.putString("searchHistoryCity","");
                         editor.apply();
