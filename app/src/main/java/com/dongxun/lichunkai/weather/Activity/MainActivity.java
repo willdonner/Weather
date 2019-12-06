@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String newWeatherApiKey;
     private RealtimeInfo realtimeInfo = new RealtimeInfo();
     private ImageView imageView_location;
-    private String jrsctext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setBack();
         getPermission();
     }
+
 
 
 
