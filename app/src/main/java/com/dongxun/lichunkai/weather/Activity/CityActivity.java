@@ -412,10 +412,12 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
             //搜索
             searchCity();
             //更换UI
+            LinearLayout_history.setVisibility(View.GONE);
             imageView_logo.setImageResource(R.drawable.logo_search);
             textView_title.setText("搜索结果");
         }else {
             //显示搜索历史和热门城市
+            LinearLayout_history.setVisibility(View.VISIBLE);
             imageView_noData_hotCity.setVisibility(View.GONE);
             ListView_hotCity.setVisibility(View.VISIBLE);
             setHotAdapter(hotCity);
