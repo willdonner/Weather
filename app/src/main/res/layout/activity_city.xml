@@ -116,15 +116,6 @@
                 android:dividerHeight="1px"
                 android:paddingVertical="20dp"
                 android:paddingLeft="10dp"/>
-
-            <ImageView
-                android:id="@+id/imageView_noData_historyCity"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_gravity="center"
-                android:layout_marginVertical="20dp"
-                android:visibility="gone"
-                app:srcCompat="@drawable/logo_nodata" />
         </LinearLayout>
 
         <LinearLayout

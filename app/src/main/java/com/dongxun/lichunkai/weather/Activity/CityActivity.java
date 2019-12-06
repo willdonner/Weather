@@ -60,7 +60,6 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView imageView_noData_hotCity;
     private String newWeatherApiKey;
     private RecyclerView recyclerView_history;
-    private ImageView imageView_noData_historyCity;
     private LinearLayout LinearLayout_history;
     private ImageView imageView_delete;
 
@@ -95,11 +94,9 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
         //有搜索历史显示，无不显示
         if (searchHistoryList.size() == 0) {
             LinearLayout_history.setVisibility(View.GONE);
-            imageView_noData_historyCity.setVisibility(View.VISIBLE);
             return;
         }else {
-            recyclerView_history.setVisibility(View.VISIBLE);
-            imageView_noData_historyCity.setVisibility(View.GONE);
+            LinearLayout_history.setVisibility(View.VISIBLE);
 
 //            LinearLayoutManager layoutManager = new LinearLayoutManager(this);//列表
             StaggeredGridLayoutManager layoutManager1 = new StaggeredGridLayoutManager(1,StaggeredGridLayoutManager.HORIZONTAL);//瀑布流
@@ -360,7 +357,6 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
         textView_title = findViewById(R.id.textView_title);
         imageView_noData_hotCity = findViewById(R.id.imageView_noData_hotCity);
         recyclerView_history = findViewById(R.id.recyclerView_history);
-        imageView_noData_historyCity = findViewById(R.id.imageView_noData_historyCity);
         LinearLayout_history = findViewById(R.id.LinearLayout_history);
         imageView_delete = findViewById(R.id.imageView_delete);
         imageView_delete.setOnClickListener(this);
