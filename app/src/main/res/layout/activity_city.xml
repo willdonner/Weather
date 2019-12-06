@@ -111,10 +111,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="10dp"
+                android:background="#fff"
                 android:divider="#efefef"
                 android:dividerHeight="1px"
-                android:background="#fff"
-                android:padding="20dp"/>
+                android:paddingVertical="20dp"
+                android:paddingLeft="10dp"/>
 
             <ImageView
                 android:id="@+id/imageView_noData_historyCity"

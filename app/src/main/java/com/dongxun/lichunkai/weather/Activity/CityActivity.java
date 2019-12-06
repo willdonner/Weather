@@ -94,7 +94,7 @@ public class CityActivity extends AppCompatActivity implements View.OnClickListe
         searchHistoryList = getHistoryCity();
         //有搜索历史显示，无不显示
         if (searchHistoryList.size() == 0) {
-            recyclerView_history.setVisibility(View.GONE);
+            LinearLayout_history.setVisibility(View.GONE);
             imageView_noData_historyCity.setVisibility(View.VISIBLE);
             return;
         }else {
