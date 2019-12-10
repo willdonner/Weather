@@ -5,9 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
@@ -53,6 +55,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -67,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private String TAG = "MainActivity";
     private LocationManager locationManager;
     private LocationListener locationListener;
-    private String City = "昆明";
+    private String City ;
     private ImageView imageView_back;
     private TextView textView_city;
     private TextView textView_temperature;
@@ -83,31 +86,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView textView_loading;
     private ImageView imageView_loading;
     private LinearLayout LinearLayout_message;
-    private String WeatherApiKey;
-    private String WeatherApiKey_backup;
     private String newWeatherApiKey;
+    private String amapApikey;
     private RealtimeInfo realtimeInfo = new RealtimeInfo();
     private ImageView imageView_location;
-    private String jrsctext;
+    private String locationProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //聚合天气api
-        WeatherApiKey = getResources().getString(R.string.apikey);
-        WeatherApiKey_backup = getResources().getString(R.string.apikey_backup);
-
         //和风天气api
         newWeatherApiKey = getResources().getString(R.string.newapikey);
+        //高德地图api
+        amapApikey = getResources().getString(R.string.amap_apikey);
+        getLocation(this);
         JinrishiciFactory.init(this);
         ImmersionBar.with(this).init();
         initView();
         setBack();
         getPermission();
+
     }
-
-
 
     /**
      * 显示信息
@@ -222,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         realjinrisiciTextView = findViewById(R.id.realjinrisiciTextView);
 
         final RefreshLayout refreshLayout = (RefreshLayout)findViewById(R.id.refreshLayout);
+        refreshLayout.autoRefresh();
         //设置 Header 为 贝塞尔雷达 样式
         refreshLayout.setRefreshHeader(new BezierRadarHeader(this).setEnableHorizontalDrag(true));
         //设置 Footer 为 球脉冲 样式
@@ -233,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onRefresh(RefreshLayout refreshlayout) {
                 if(NetworkUtils.isConnected()){
                     jrscapi();
-                    sendRequestWithOkHttp(City,WeatherApiKey);
+                    sendRequestWithOkHttp(City,newWeatherApiKey);
                     AirsendRequestWithOkHttp(City,newWeatherApiKey);
                     forecastsendRequestWithOkHttp(City,newWeatherApiKey,5);//加载5天数据
                     refreshlayout.finishRefresh();
@@ -258,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 发送查询天气请求
         if(NetworkUtils.isConnected()){
             jrscapi();
-            sendRequestWithOkHttp(city,WeatherApiKey);
+            sendRequestWithOkHttp(city,newWeatherApiKey);
             AirsendRequestWithOkHttp(city,newWeatherApiKey);
             forecastsendRequestWithOkHttp(city,newWeatherApiKey,5);//加载5天数据
         }
@@ -656,4 +657,79 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
     }
+
+    //根据经纬度查询位置信息以提供天气查询
+    @SuppressLint("MissingPermission")
+    private void getLocation(Context context){
+        //1.获取位置管理器
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        //2.获取位置提供器，GPS或是NetWork
+        List<String> providers = locationManager.getProviders(true);
+        if (providers.contains(LocationManager.NETWORK_PROVIDER)){
+            //如果是网络定位
+            locationProvider = LocationManager.NETWORK_PROVIDER;
+        }else if (providers.contains(LocationManager.GPS_PROVIDER)){
+            //如果是GPS定位
+            locationProvider = LocationManager.GPS_PROVIDER;
+        }else {
+            Toast.makeText(this, "没有可用的位置提供器", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        //3.获取上次的位置，一般第一次运行，此值为null
+        @SuppressLint("MissingPermission") Location location = locationManager.getLastKnownLocation(locationProvider);
+        if (location!=null){
+            showLocation(location);
+        }else{
+            // 监视地理位置变化，第二个和第三个参数分别为更新的最短时间minTime和最短距离minDistace
+            locationManager.requestLocationUpdates(locationProvider, 0, 0,mListener);
+        }
+    }
+
+    private void showLocation(Location location){
+        String address = location.getLongitude()+","+location.getLatitude();
+        OkHttpClient okHttpClient = new OkHttpClient();//1.定义一个client
+        Request request = new Request.Builder().url("https://restapi.amap.com/v3/geocode/regeo?key="+amapApikey+"&location="+address+"&poitype=&radius=&extensions=base&batch=false&roadlevel=0").build();//2.定义一个request
+        Call call = okHttpClient.newCall(request);//3.使用client去请求
+        call.enqueue(new Callback() {//4.回调方法
+            @Override
+            public void onFailure(Call call, IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result = response.body().string();//5.获得网络数据
+                try {
+                    JSONObject responses = new JSONObject(result);
+                    String results = responses.getString("regeocode");
+                    JSONObject regeocode = new JSONObject(results);
+                    String res = regeocode.getString("addressComponent");
+                    JSONObject addressComponent = new JSONObject(res);
+                    String ret = addressComponent.getString("city");
+                    City = ret;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(result);
+            }
+        });
+    }
+
+    LocationListener mListener = new LocationListener() {
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+        }
+        @Override
+        public void onProviderEnabled(String provider) {
+        }
+        @Override
+        public void onProviderDisabled(String provider) {
+        }
+        // 如果位置发生变化，重新显示
+        @Override
+        public void onLocationChanged(Location location) {
+            showLocation(location);
+        }
+    };
 }
