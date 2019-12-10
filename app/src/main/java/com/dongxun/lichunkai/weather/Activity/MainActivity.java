@@ -16,8 +16,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -73,7 +71,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private String TAG = "MainActivity";
     private LocationManager locationManager;
-    private LocationListener locationListener;
     private String City ;
     private ImageView imageView_back;
     private TextView textView_city;
@@ -107,7 +104,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         networkChangeReceiver = new NetworkChangeReceiver();
         registerReceiver(networkChangeReceiver, intentFilter);
-
         //和风天气api
         newWeatherApiKey = getResources().getString(R.string.newapikey);
         //高德地图api
